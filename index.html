@@ -116,13 +116,19 @@ input, select, textarea { font: inherit; color: inherit; }
   position: relative; overflow: hidden;
   height: 520px; display: flex; align-items: flex-end;
 }
-.hero-bg {
+/* スライドショー各枚 */
+.hero-slide {
   position: absolute; inset: 0;
-  background-image: url("hero.jpg");
   background-size: cover; background-position: center 30%;
-  animation: heroZoom 16s ease-out forwards;
+  opacity: 0;
+  transition: opacity 1.6s ease-in-out;
+  will-change: opacity;
 }
-@keyframes heroZoom { from { transform:scale(1.06) } to { transform:scale(1) } }
+.hero-slide.active { opacity: 1; }
+/* ズームアニメーションは JS で付与 */
+@keyframes heroZoom { from { transform:scale(1.07) } to { transform:scale(1) } }
+.hero-slide.zooming { animation: heroZoom 18s ease-out forwards; }
+
 .hero-ov-l {
   position: absolute; inset: 0;
   background: linear-gradient(105deg,rgba(12,12,12,.82) 0%,rgba(12,12,12,.64) 36%,rgba(12,12,12,.24) 62%,transparent 85%);
@@ -152,12 +158,47 @@ input, select, textarea { font: inherit; color: inherit; }
   padding: 7px 14px; border-radius: var(--r-pill);
   font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,.94);
 }
+
+/* 統計：すりガラスボックスで視認性UP */
 .hero-stats {
-  position: absolute; z-index: 2; bottom: 28px; right: 40px;
-  display: flex; gap: 28px;
+  position: absolute; z-index: 2; bottom: 24px; right: 40px;
+  display: flex; gap: 10px;
 }
-.hero-stat-num   { font-size: 26px; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -0.02em; }
-.hero-stat-label { font-size: 10px; letter-spacing: .12em; color: rgba(255,255,255,.6); margin-top: 4px; }
+.hero-stat {
+  display: flex; flex-direction: column; align-items: center;
+  background: rgba(0,0,0,.38);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 14px;
+  padding: 12px 20px;
+  min-width: 80px;
+}
+.hero-stat-num {
+  font-size: 26px; font-weight: 800; color: #fff;
+  line-height: 1; letter-spacing: -0.02em;
+  text-shadow: 0 1px 8px rgba(0,0,0,.3);
+}
+.hero-stat-label {
+  font-size: 10px; letter-spacing: .1em;
+  color: rgba(255,255,255,.78);
+  margin-top: 5px; white-space: nowrap;
+}
+
+/* スライドインジケーター（ドット） */
+.slide-dots {
+  position: absolute; z-index: 3; bottom: 20px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 7px;
+}
+.slide-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,.38); border: none;
+  cursor: pointer; transition: all .3s; padding: 0;
+}
+.slide-dot.active {
+  width: 22px; border-radius: 3px;
+  background: rgba(255,255,255,.9);
+}
+
 
 /* ==================================================
    Search Card（ヒーロー下部にオーバーラップ）
@@ -494,7 +535,10 @@ input, select, textarea { font: inherit; color: inherit; }
   .container, .header-inner, .map-section-container, .footer-main, .footer-bottom-inner { padding-left: 24px; padding-right: 24px; }
   .search-wrap { padding-left: 24px; padding-right: 24px; }
   .hero-inner { padding-left: 24px; padding-right: 24px; }
-  .hero-stats { right: 24px; }
+  .hero-stats { right: 16px; bottom: 16px; gap: 7px; }
+  .hero-stat { padding: 9px 14px; min-width: 68px; }
+  .hero-stat-num { font-size: 20px; }
+  .hero-stat-label { font-size: 9px; }
   .trust-inner { grid-template-columns: 1fr 1fr; }
   .footer-main { grid-template-columns: 1fr 1fr; gap: 32px; }
 }
@@ -554,10 +598,13 @@ input, select, textarea { font: inherit; color: inherit; }
 </header>
 
 <!-- ===================== HERO ===================== -->
-<section class="hero">
-  <div class="hero-bg"></div>
+<section class="hero" id="hero">
+  <!-- スライド画像（JS で動的生成） -->
+  <div id="heroSlides"></div>
+
   <div class="hero-ov-l"></div>
   <div class="hero-ov-b"></div>
+
   <div class="hero-inner">
     <h1 class="hero-title">理想のブラインドを、<br>信頼できるプロと。</h1>
     <p class="hero-lead">全国のブラインド施工業者を掲載。比較・見積もりで、安心・納得の業者選びをサポートします。</p>
@@ -576,6 +623,8 @@ input, select, textarea { font: inherit; color: inherit; }
       </div>
     </div>
   </div>
+
+  <!-- 統計（すりガラス） -->
   <div class="hero-stats">
     <div class="hero-stat">
       <div class="hero-stat-num" id="stat-total">—</div>
@@ -590,6 +639,9 @@ input, select, textarea { font: inherit; color: inherit; }
       <div class="hero-stat-label">施工実績</div>
     </div>
   </div>
+
+  <!-- スライドインジケーター（ドット） -->
+  <div class="slide-dots" id="slideDots"></div>
 </section>
 
 <!-- ===================== SEARCH CARD ===================== -->
@@ -1059,7 +1111,82 @@ const navObs=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry
 ["map-section","list-section","trust-section"].forEach(id=>{const el=document.getElementById(id);if(el)navObs.observe(el);});
 window.addEventListener("scroll",()=>{if(window.scrollY<200){document.querySelectorAll(".header-nav a").forEach(l=>l.classList.remove("active"));const h=document.querySelector('.header-nav a[href="#"]');if(h)h.classList.add("active");}},{passive:true});
 
-/* Init */
+/* ==================================================
+   Hero Slideshow
+   ================================================== */
+
+/*
+  ▼ 背景写真を追加する場合はここのURLを増やすだけ ▼
+  同じフォルダに画像ファイルを置く場合: "photo2.jpg"
+  外部URL:                             "https://example.com/photo.jpg"
+*/
+const SLIDE_IMAGES = [
+  "hero.jpg",
+  // "photo2.jpg",   ← 追加したい画像のファイル名をここに書く
+  // "photo3.jpg",
+];
+
+const SLIDE_INTERVAL = 5000; // 切り替え間隔（ミリ秒）。5000 = 5秒
+
+(function initSlideshow() {
+  const container = document.getElementById("heroSlides");
+  const dotsWrap  = document.getElementById("slideDots");
+  if (!container) return;
+
+  // 画像が1枚だけならドット不要
+  const multi = SLIDE_IMAGES.length > 1;
+
+  // スライド要素を生成
+  const slides = SLIDE_IMAGES.map((src, i) => {
+    const el = document.createElement("div");
+    el.className = "hero-slide" + (i === 0 ? " active zooming" : "");
+    el.style.backgroundImage = `url(${JSON.stringify(src)})`;
+    container.appendChild(el);
+    return el;
+  });
+
+  // ドット生成
+  const dots = SLIDE_IMAGES.map((_, i) => {
+    if (!multi) return null;
+    const btn = document.createElement("button");
+    btn.className = "slide-dot" + (i === 0 ? " active" : "");
+    btn.setAttribute("aria-label", `スライド${i + 1}`);
+    btn.addEventListener("click", () => goTo(i));
+    dotsWrap.appendChild(btn);
+    return btn;
+  });
+
+  let current = 0;
+  let timer;
+
+  function goTo(idx) {
+    slides[current].classList.remove("active");
+    if (dots[current]) dots[current].classList.remove("active");
+    current = (idx + SLIDE_IMAGES.length) % SLIDE_IMAGES.length;
+    slides[current].classList.add("active");
+    // ズームを再起動
+    slides[current].classList.remove("zooming");
+    void slides[current].offsetWidth; // reflow
+    slides[current].classList.add("zooming");
+    if (dots[current]) dots[current].classList.add("active");
+  }
+
+  function next() { goTo(current + 1); }
+
+  if (multi) {
+    timer = setInterval(next, SLIDE_INTERVAL);
+    // ホバー中は止める
+    const hero = document.getElementById("hero");
+    if (hero) {
+      hero.addEventListener("mouseenter", () => clearInterval(timer));
+      hero.addEventListener("mouseleave", () => { timer = setInterval(next, SLIDE_INTERVAL); });
+    }
+  }
+})();
+
+/* ==================================================
+   Init
+   ================================================== */
 populatePrefectures();
 updateStats();
 applyFilters();
