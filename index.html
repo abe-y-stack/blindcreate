@@ -166,22 +166,23 @@ input, select, textarea { font: inherit; color: inherit; }
 }
 .hero-stat {
   display: flex; flex-direction: column; align-items: center;
-  background: rgba(0,0,0,.38);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.52);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,.22);
   border-radius: 14px;
-  padding: 12px 20px;
-  min-width: 80px;
-}
-.hero-stat-num {
-  font-size: 26px; font-weight: 800; color: #fff;
-  line-height: 1; letter-spacing: -0.02em;
-  text-shadow: 0 1px 8px rgba(0,0,0,.3);
+  padding: 14px 22px;
+  min-width: 88px; gap: 4px;
 }
 .hero-stat-label {
-  font-size: 10px; letter-spacing: .1em;
-  color: rgba(255,255,255,.78);
-  margin-top: 5px; white-space: nowrap;
+  font-size: 11px; font-weight: 500;
+  color: rgba(255,255,255,.85);
+  letter-spacing: .06em; white-space: nowrap;
+  line-height: 1;
+}
+.hero-stat-num {
+  font-size: 30px; font-weight: 800; color: #fff;
+  line-height: 1; letter-spacing: -0.02em;
+  text-shadow: 0 2px 10px rgba(0,0,0,.4);
 }
 
 /* スライドインジケーター（ドット） */
@@ -535,10 +536,10 @@ input, select, textarea { font: inherit; color: inherit; }
   .container, .header-inner, .map-section-container, .footer-main, .footer-bottom-inner { padding-left: 24px; padding-right: 24px; }
   .search-wrap { padding-left: 24px; padding-right: 24px; }
   .hero-inner { padding-left: 24px; padding-right: 24px; }
-  .hero-stats { right: 16px; bottom: 16px; gap: 7px; }
-  .hero-stat { padding: 9px 14px; min-width: 68px; }
-  .hero-stat-num { font-size: 20px; }
-  .hero-stat-label { font-size: 9px; }
+  .hero-stats { right: 16px; bottom: 16px; gap: 6px; }
+  .hero-stat { padding: 10px 14px; min-width: 72px; }
+  .hero-stat-num { font-size: 22px; }
+  .hero-stat-label { font-size: 10px; }
   .trust-inner { grid-template-columns: 1fr 1fr; }
   .footer-main { grid-template-columns: 1fr 1fr; gap: 32px; }
 }
@@ -627,16 +628,16 @@ input, select, textarea { font: inherit; color: inherit; }
   <!-- 統計（すりガラス） -->
   <div class="hero-stats">
     <div class="hero-stat">
-      <div class="hero-stat-num" id="stat-total">—</div>
       <div class="hero-stat-label">登録業者数</div>
+      <div class="hero-stat-num" id="stat-total">—</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num" id="stat-prefs">—</div>
       <div class="hero-stat-label">対応都道府県</div>
+      <div class="hero-stat-num" id="stat-prefs">—</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num" id="stat-cases">—</div>
       <div class="hero-stat-label">施工実績</div>
+      <div class="hero-stat-num" id="stat-cases">—</div>
     </div>
   </div>
 
@@ -1126,7 +1127,7 @@ const SLIDE_IMAGES = [
   // "photo3.jpg",
 ];
 
-const SLIDE_INTERVAL = 5000; // 切り替え間隔（ミリ秒）。5000 = 5秒
+const SLIDE_INTERVAL = 2000; // 切り替え間隔（ミリ秒）。2000 = 2秒
 
 (function initSlideshow() {
   const container = document.getElementById("heroSlides");
