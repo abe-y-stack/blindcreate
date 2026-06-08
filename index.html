@@ -555,7 +555,7 @@ input, select, textarea { font: inherit; color: inherit; }
 <header class="site-header">
   <div class="header-inner">
     <a href="#" class="header-logo">
-      <div class="logo-icon"><img src="hero.jpg" alt=""></div>
+      <div class="logo-icon"><img src="https://picsum.photos/seed/blind-facade1/64/64" alt=""></div>
       <div>
         <div class="logo-name">ブラインド施工業者一覧</div>
         <div class="logo-sub">信頼できるプロを、かんたんに検索</div>
@@ -1015,9 +1015,10 @@ window.addEventListener("scroll",()=>{if(window.scrollY<200){document.querySelec
   外部URL:                             "https://example.com/photo.jpg"
 */
 const SLIDE_IMAGES = [
-  "hero.jpg",
-  "photo2.jpg", 
-  "photo3.jpg",
+  /* ↓ GitHubにhero.jpgをアップしたら先頭に "hero.jpg", と追加できます */
+  "https://picsum.photos/seed/blind-facade1/1400/700",
+  "https://picsum.photos/seed/blind-interior2/1400/700",
+  "https://picsum.photos/seed/blind-room3/1400/700",
 ];
 
 const SLIDE_INTERVAL = 5000; // 切り替え間隔（ミリ秒）。5000 = 5秒
