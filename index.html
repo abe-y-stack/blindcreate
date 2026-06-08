@@ -161,7 +161,7 @@ input, select, textarea { font: inherit; color: inherit; }
 
 /* 統計：すりガラスボックスで視認性UP */
 .hero-stats {
-  position: absolute; z-index: 2; bottom: 24px; right: 40px;
+  position: absolute; z-index: 2; bottom: 72px; right: 40px;
   display: flex; gap: 10px;
 }
 .hero-stat {
@@ -536,7 +536,7 @@ input, select, textarea { font: inherit; color: inherit; }
   .container, .header-inner, .map-section-container, .footer-main, .footer-bottom-inner { padding-left: 24px; padding-right: 24px; }
   .search-wrap { padding-left: 24px; padding-right: 24px; }
   .hero-inner { padding-left: 24px; padding-right: 24px; }
-  .hero-stats { right: 16px; bottom: 16px; gap: 6px; }
+  .hero-stats { right: 16px; bottom: 56px; gap: 6px; }
   .hero-stat { padding: 10px 14px; min-width: 72px; }
   .hero-stat-num { font-size: 22px; }
   .hero-stat-label { font-size: 10px; }
@@ -1127,7 +1127,7 @@ const SLIDE_IMAGES = [
   // "photo3.jpg",
 ];
 
-const SLIDE_INTERVAL = 2000; // 切り替え間隔（ミリ秒）。2000 = 2秒
+const SLIDE_INTERVAL = 5000; // 切り替え間隔（ミリ秒）。5000 = 5秒
 
 (function initSlideshow() {
   const container = document.getElementById("heroSlides");
