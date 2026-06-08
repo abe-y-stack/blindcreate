@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>管理画面 | Passiv Blind Map</title>
+<style>
+:root {
+  --c-bg:      #F5F5F7;
+  --c-white:   #FFFFFF;
+  --c-text:    #1A1A1A;
+  --c-sub:     #555;
+  --c-mute:    #888;
+  --c-line:    #E5E5E5;
+  --c-line-md: #D0D0D0;
+  --c-blue:    #0071E3;
+  --c-red:     #C8342B;
+  --c-green:   #1B873B;
+  --c-warn:    #FFF3CD;
+  --font: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  --r: 10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--c-bg);color:var(--c-text);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+a{color:var(--c-blue);text-decoration:none;}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+input,select,textarea{font:inherit;color:inherit;}
+img{display:block;max-width:100%;}
+
+/* ======== Lock Screen ======== */
+.lock-screen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:var(--c-text);
+}
+.lock-card{
+  background:#fff;border-radius:20px;padding:48px 40px;width:100%;max-width:380px;
+  text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.18);
+}
+.lock-logo{font-size:17px;font-weight:700;margin-bottom:6px;}
+.lock-sub{font-size:12.5px;color:var(--c-mute);margin-bottom:32px;}
+.lock-label{font-size:11.5px;color:var(--c-sub);font-weight:600;letter-spacing:.06em;text-align:left;margin-bottom:6px;}
+.lock-input{
+  width:100%;padding:12px 16px;border:1.5px solid var(--c-line-md);border-radius:var(--r);
+  font-size:15px;text-align:center;letter-spacing:.1em;outline:none;transition:border-color .2s;
+  margin-bottom:14px;
+}
+.lock-input:focus{border-color:var(--c-text);}
+.lock-btn{
+  width:100%;padding:13px;background:var(--c-text);color:#fff;border-radius:var(--r);
+  font-size:14px;font-weight:600;transition:background .2s;
+}
+.lock-btn:hover{background:#333;}
+.lock-err{font-size:12.5px;color:var(--c-red);margin-top:10px;display:none;}
+.lock-err.show{display:block;}
+
+/* ======== Admin Layout ======== */
+.admin-layout{display:none;min-height:100vh;flex-direction:column;}
+.admin-layout.open{display:flex;}
+
+.admin-header{
+  background:var(--c-text);color:#fff;
+  padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.admin-header-logo{font-size:15px;font-weight:700;}
+.admin-header-logo span{font-weight:400;color:rgba(255,255,255,.5);font-size:12px;margin-left:8px;}
+.admin-header-actions{display:flex;gap:8px;}
+
+.admin-body{flex:1;padding:32px;max-width:1200px;margin:0 auto;width:100%;}
+
+/* ======== Stats Bar ======== */
+.stats-bar{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;
+}
+.stat-card{
+  background:var(--c-white);border-radius:var(--r);padding:18px 20px;
+  border:1px solid var(--c-line);
+}
+.stat-card-num{font-size:28px;font-weight:700;line-height:1;letter-spacing:-0.02em;}
+.stat-card-label{font-size:11.5px;color:var(--c-mute);margin-top:5px;letter-spacing:.04em;}
+
+/* ======== Buttons ======== */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:9px 18px;border-radius:var(--r);font-size:13px;font-weight:600;
+  transition:all .2s;white-space:nowrap;cursor:pointer;
+}
+.btn-sm{padding:6px 12px;font-size:12px;}
+.btn-dark{background:var(--c-text);color:#fff;border:none;}
+.btn-dark:hover{background:#333;}
+.btn-blue{background:var(--c-blue);color:#fff;border:none;}
+.btn-blue:hover{background:#005bb5;}
+.btn-outline{border:1.5px solid var(--c-line-md);color:var(--c-text);background:#fff;}
+.btn-outline:hover{border-color:var(--c-text);background:var(--c-bg);}
+.btn-red{background:var(--c-red);color:#fff;border:none;}
+.btn-red:hover{background:#a0251e;}
+.btn-ghost{color:var(--c-sub);}
+.btn-ghost:hover{color:var(--c-text);background:var(--c-bg);}
+
+/* ======== Toolbar ======== */
+.table-toolbar{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;margin-bottom:16px;
+}
+.table-search{
+  display:flex;align-items:center;gap:8px;
+  background:#fff;border:1.5px solid var(--c-line-md);border-radius:var(--r);
+  padding:0 14px;flex:1;max-width:360px;transition:border-color .2s;
+}
+.table-search:focus-within{border-color:var(--c-text);}
+.table-search svg{color:var(--c-mute);flex-shrink:0;}
+.table-search input{border:none;background:transparent;padding:10px 0;font-size:13.5px;outline:none;width:100%;}
+.table-actions{display:flex;gap:8px;}
+
+/* ======== Table ======== */
+.table-wrap{background:var(--c-white);border:1px solid var(--c-line);border-radius:var(--r);overflow:hidden;}
+.admin-table{width:100%;border-collapse:collapse;}
+.admin-table th{
+  padding:11px 16px;text-align:left;font-size:11px;font-weight:600;
+  letter-spacing:.1em;color:var(--c-mute);text-transform:uppercase;
+  background:var(--c-bg);border-bottom:1px solid var(--c-line);white-space:nowrap;
+}
+.admin-table td{
+  padding:12px 16px;border-bottom:1px solid var(--c-line);font-size:13px;vertical-align:middle;
+}
+.admin-table tr:last-child td{border-bottom:none;}
+.admin-table tr:hover td{background:#FAFAFA;}
+.td-thumb{
+  width:52px;height:40px;border-radius:6px;overflow:hidden;
+  background:linear-gradient(135deg,#C9BFA8 0%,#8C7B62 100%);
+  flex-shrink:0;border:1px solid var(--c-line);
+}
+.td-thumb img{width:100%;height:100%;object-fit:cover;}
+.td-name{font-weight:600;color:var(--c-text);}
+.td-sub{font-size:11.5px;color:var(--c-mute);margin-top:2px;}
+.badge{
+  display:inline-block;font-size:10.5px;font-weight:600;padding:2px 8px;
+  border-radius:980px;letter-spacing:.02em;
+}
+.badge-has{background:#E8F5E9;color:#1B5E20;}
+.badge-none{background:#F5F5F5;color:var(--c-mute);}
+.row-actions{display:flex;gap:5px;align-items:center;}
+.empty-row td{text-align:center;padding:48px;color:var(--c-mute);}
+
+/* ======== Modal ======== */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.52);backdrop-filter:blur(4px);
+  z-index:500;display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto;
+}
+.modal-backdrop.open{display:flex;animation:fadeIn .2s;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.modal{
+  background:#fff;border-radius:16px;width:100%;max-width:660px;
+  max-height:92vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.16);
+  animation:slideUp .28s;
+}
+.modal-head{
+  padding:20px 24px 16px;border-bottom:1px solid var(--c-line);
+  display:flex;justify-content:space-between;align-items:center;
+  position:sticky;top:0;background:#fff;z-index:1;
+}
+.modal-head h2{font-size:18px;font-weight:700;letter-spacing:-0.01em;}
+.modal-close{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--c-mute);transition:all .18s;}
+.modal-close:hover{background:var(--c-bg);color:var(--c-text);}
+.modal-body{padding:20px 24px 28px;}
+
+/* ======== Form ======== */
+.form-grid{display:grid;gap:15px;}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+.form-row{display:grid;gap:5px;}
+.form-row label{font-size:11.5px;font-weight:600;color:var(--c-sub);letter-spacing:.06em;}
+.form-row label .req{color:var(--c-red);margin-left:2px;}
+.form-row input,.form-row select,.form-row textarea{
+  padding:10px 12px;border:1.5px solid var(--c-line-md);border-radius:var(--r);
+  font-size:13.5px;outline:none;width:100%;background:#fff;transition:border-color .2s;
+}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--c-text);}
+.form-row textarea{resize:vertical;min-height:72px;}
+.form-row .hint{font-size:11.5px;color:var(--c-mute);line-height:1.6;}
+.form-checks{display:flex;flex-wrap:wrap;gap:6px;}
+.form-check{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:1.5px solid var(--c-line-md);border-radius:980px;font-size:12.5px;cursor:pointer;transition:all .18s;}
+.form-check input{display:none;}
+.form-check:has(input:checked){background:var(--c-text);color:#fff;border-color:var(--c-text);}
+.form-footer{margin-top:22px;display:flex;gap:8px;justify-content:flex-end;padding-top:18px;border-top:1px solid var(--c-line);}
+.form-msg{padding:10px 13px;border-radius:var(--r);font-size:13px;margin-bottom:14px;display:none;}
+.form-msg.ok{background:#E8F5E9;color:#1B5E20;display:block;}
+.form-msg.ng{background:#FDECEA;color:#8B1F16;display:block;}
+
+/* 写真プレビュー */
+.img-preview{
+  width:100%;height:120px;border-radius:var(--r);border:1.5px solid var(--c-line-md);
+  overflow:hidden;background:linear-gradient(135deg,#C9BFA8 0%,#8C7B62 100%);
+  position:relative;margin-bottom:8px;
+}
+.img-preview img{width:100%;height:100%;object-fit:cover;display:none;}
+.img-preview img.loaded{display:block;}
+.img-preview .ph{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.6);font-size:12px;flex-direction:column;gap:6px;
+}
+
+/* ======== Notice ======== */
+.notice{
+  background:var(--c-warn);border:1px solid #FFC107;border-radius:var(--r);
+  padding:14px 18px;font-size:13px;color:#7A5700;margin-bottom:24px;
+  display:flex;align-items:flex-start;gap:10px;
+}
+.notice-icon{flex-shrink:0;font-size:16px;margin-top:1px;}
+
+/* spinner */
+.spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ======== Responsive ======== */
+@media(max-width:800px){
+  .stats-bar{grid-template-columns:1fr 1fr;}
+  .admin-body{padding:20px 16px;}
+  .form-grid-2{grid-template-columns:1fr;}
+  .admin-header{padding:0 16px;}
+}
+@media(max-width:520px){
+  .stats-bar{grid-template-columns:1fr 1fr;}
+  .admin-table th:nth-child(3),.admin-table td:nth-child(3),
+  .admin-table th:nth-child(4),.admin-table td:nth-child(4){display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ======== Lock Screen ======== -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-logo">Passiv Blind Map</div>
+    <div class="lock-sub">管理画面 — このページは非公開です</div>
+    <div class="lock-label">パスワード</div>
+    <input class="lock-input" type="password" id="lockPw" placeholder="••••••" onkeydown="if(event.key==='Enter')unlock()">
+    <button class="lock-btn" onclick="unlock()">ログイン</button>
+    <div class="lock-err" id="lockErr">パスワードが一致しません</div>
+  </div>
+</div>
+
+<!-- ======== Admin Layout ======== -->
+<div class="admin-layout" id="adminLayout">
+  <header class="admin-header">
+    <div class="admin-header-logo">
+      Passiv Blind Map
+      <span>管理画面</span>
+    </div>
+    <div class="admin-header-actions">
+      <button class="btn btn-outline btn-sm" onclick="exportJSON()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        書き出し
+      </button>
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('importFile').click()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        読み込み
+      </button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+      <button class="btn btn-dark btn-sm" onclick="openAddModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        業者を追加
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">ログアウト</button>
+    </div>
+  </header>
+
+  <div class="admin-body">
+
+    <!-- 注意書き -->
+    <div class="notice">
+      <span class="notice-icon">🔒</span>
+      <div>
+        <strong>このページは管理者専用です。</strong>
+        URLを知っている人だけがアクセスできます。公開サイトからはリンクされていません。
+        ブックマークしておくことをお勧めします。
+      </div>
+    </div>
+
+    <!-- 統計カード -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-card-num" id="s-total">—</div>
+        <div class="stat-card-label">登録業者数</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-num" id="s-prefs">—</div>
+        <div class="stat-card-label">対応都道府県</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-num" id="s-has">—</div>
+        <div class="stat-card-label">施工実績あり</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-num" id="s-imgs">—</div>
+        <div class="stat-card-label">写真登録済み</div>
+      </div>
+    </div>
+
+    <!-- ツールバー -->
+    <div class="table-toolbar">
+      <div class="table-search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="tableSearch" placeholder="会社名 / 住所 / 都道府県で絞り込み..." oninput="renderTable()">
+      </div>
+      <div class="table-actions">
+        <button class="btn btn-outline btn-sm" style="color:var(--c-red)" onclick="confirmReset()">初期化</button>
+      </div>
+    </div>
+
+    <!-- テーブル -->
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th style="width:64px">写真</th>
+            <th>会社名 / 住所</th>
+            <th>都道府県</th>
+            <th>実績</th>
+            <th style="width:150px">操作</th>
+          </tr>
+        </thead>
+        <tbody id="adminTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ======== Modal: 追加・編集 ======== -->
+<div class="modal-backdrop" id="editModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="editModalTitle">業者を追加</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-msg" id="editMsg"></div>
+      <div class="form-grid" id="editFormWrap">
+
+        <!-- 写真URL -->
+        <div class="form-row">
+          <label>会社・施工写真のURL</label>
+          <div class="img-preview" id="imgPreview">
+            <img id="imgPreviewImg" src="" alt="" onload="this.classList.add('loaded')" onerror="this.classList.remove('loaded')">
+            <div class="ph" id="imgPreviewPh">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span>写真なし</span>
+            </div>
+          </div>
+          <input type="url" id="f_imageUrl" placeholder="https://example.com/photo.jpg" oninput="previewImg(this.value)">
+          <div class="hint">会社サイトや施工写真の直接URLを貼り付けてください（.jpg / .png / .webp 等）</div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label>会社名 <span class="req">必須</span></label>
+            <input type="text" id="f_name" placeholder="株式会社 ○○施工" required>
+          </div>
+          <div class="form-row">
+            <label>都道府県 <span class="req">必須</span></label>
+            <input type="text" id="f_pref" placeholder="東京都">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>住所 <span class="req">必須</span></label>
+          <input type="text" id="f_address" placeholder="東京都江東区森下1丁目9番9">
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label>緯度</label>
+            <input type="number" id="f_lat" step="0.0001" placeholder="35.6762">
+            <div class="hint"><a href="https://www.google.co.jp/maps" target="_blank">Google Maps</a> で住所を調べ、URLの @35.xxx,139.xxx を入力</div>
+          </div>
+          <div class="form-row">
+            <label>経度</label>
+            <input type="number" id="f_lng" step="0.0001" placeholder="139.6503">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>対応エリア（カンマ区切り）<span class="req">必須</span></label>
+          <input type="text" id="f_areas" placeholder="東京都, 神奈川県, 千葉県">
+        </div>
+
+        <div class="form-row">
+          <label>対応内容</label>
+          <div class="form-checks">
+            <label class="form-check"><input type="checkbox" name="f_types" value="新築">新築</label>
+            <label class="form-check"><input type="checkbox" name="f_types" value="リフォーム">リフォーム</label>
+            <label class="form-check"><input type="checkbox" name="f_types" value="法人">法人</label>
+            <label class="form-check"><input type="checkbox" name="f_types" value="個人">個人</label>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label>電話番号</label>
+            <input type="tel" id="f_phone" placeholder="03-0000-0000">
+          </div>
+          <div class="form-row">
+            <label>メールアドレス</label>
+            <input type="email" id="f_email" placeholder="info@example.com">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>Webサイト</label>
+          <input type="url" id="f_web" placeholder="https://example.com">
+        </div>
+
+        <div class="form-row">
+          <label>コメント / PR文</label>
+          <textarea id="f_comment" placeholder="施工実績のご紹介や、得意領域など"></textarea>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label><input type="checkbox" id="f_has" style="width:auto;margin-right:6px"> 施工実績あり</label>
+          </div>
+          <div class="form-row">
+            <label>施工実績数</label>
+            <input type="number" id="f_cases" min="0" value="0">
+          </div>
+        </div>
+
+      </div>
+
+      <div class="form-footer">
+        <button class="btn btn-ghost" onclick="closeModal()">キャンセル</button>
+        <button class="btn btn-dark" id="editSaveBtn" onclick="saveRecord()">
+          <span id="editSaveLbl">保存する</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==================================================
+   Config
+   ================================================== */
+const ADMIN_PW   = "passiv";        // ← パスワードを変更する場合はここを書き換え
+const STORE_KEY  = "passiv_blind_contractors_v1"; // index.html と共通
+const SEED_DATA  = [
+  {id:"c001",name:"東京パッシブ設計",pref:"東京都",address:"東京都渋谷区恵比寿南1-2-3",lat:35.6464,lng:139.7101,areas:["東京都","神奈川県","千葉県","埼玉県"],types:["新築","リフォーム","個人","法人"],phone:"03-1234-5678",email:"info@tokyo-passiv.example.com",website:"https://tokyo-passiv.example.com",imageUrl:"",hasCases:true,comment:"都内を中心に高性能住宅への外付けブラインド施工を多数手がけています。",cases:24,rating:4.8,reviewCount:32,reviews:[]},
+  {id:"c002",name:"世田谷ウィンドウズ",pref:"東京都",address:"東京都世田谷区三軒茶屋2-10-5",lat:35.6430,lng:139.6716,areas:["東京都","神奈川県"],types:["リフォーム","個人"],phone:"03-5432-1098",email:"",website:"",imageUrl:"",hasCases:true,comment:"",cases:12,rating:4.6,reviewCount:18,reviews:[]},
+  {id:"c003",name:"関西パッシブホームズ",pref:"大阪府",address:"大阪府大阪市北区梅田1-1-3",lat:34.7024,lng:135.4959,areas:["大阪府","京都府","兵庫県","奈良県","和歌山県"],types:["新築","リフォーム","法人","個人"],phone:"06-6123-4567",email:"info@kansai-passiv.example.com",website:"",imageUrl:"",hasCases:true,comment:"関西圏全域対応。",cases:31,rating:4.7,reviewCount:27,reviews:[]},
+  {id:"c004",name:"なにわエクステリア",pref:"大阪府",address:"大阪府堺市堺区南瓦町3-1",lat:34.5733,lng:135.4830,areas:["大阪府","和歌山県"],types:["リフォーム","個人"],phone:"072-234-5678",email:"",website:"",imageUrl:"",hasCases:false,comment:"",cases:0,rating:0,reviewCount:0,reviews:[]},
+  {id:"c005",name:"博多ウインドウワークス",pref:"福岡県",address:"福岡県福岡市博多区博多駅前3-2-1",lat:33.5904,lng:130.4017,areas:["福岡県","佐賀県","熊本県","大分県"],types:["新築","リフォーム","個人"],phone:"092-555-1234",email:"",website:"",imageUrl:"",hasCases:true,comment:"",cases:18,rating:4.9,reviewCount:21,reviews:[]},
+  {id:"c006",name:"札幌断熱プロジェクト",pref:"北海道",address:"北海道札幌市中央区大通西5-1",lat:43.0618,lng:141.3530,areas:["北海道"],types:["新築","法人"],phone:"011-222-3344",email:"",website:"",imageUrl:"",hasCases:true,comment:"",cases:9,rating:4.5,reviewCount:8,reviews:[]},
+  {id:"c007",name:"名古屋エコビルド",pref:"愛知県",address:"愛知県名古屋市中区栄3-15-33",lat:35.1681,lng:136.9088,areas:["愛知県","岐阜県","三重県"],types:["新築","リフォーム","法人","個人"],phone:"052-876-5432",email:"",website:"",imageUrl:"",hasCases:true,comment:"",cases:22,rating:4.7,reviewCount:19,reviews:[]},
+  {id:"c008",name:"杜の都ウィンドウ",pref:"宮城県",address:"宮城県仙台市青葉区中央1-3-1",lat:38.2600,lng:140.8826,areas:["宮城県","山形県","福島県","岩手県"],types:["リフォーム","個人"],phone:"022-123-4567",email:"",website:"",imageUrl:"",hasCases:true,comment:"",cases:7,rating:4.4,reviewCount:6,reviews:[]},
+  {id:"c009",name:"広島サンシェード工房",pref:"広島県",address:"広島県広島市中区紙屋町1-1-17",lat:34.3939,lng:132.4594,areas:["広島県","岡山県","山口県"],types:["新築","リフォーム","個人"],phone:"082-333-4444",email:"",website:"",imageUrl:"",hasCases:false,comment:"",cases:0,rating:0,reviewCount:0,reviews:[]},
+  {id:"c010",name:"京都パッシブ工房",pref:"京都府",address:"京都府京都市下京区烏丸通七条下る",lat:34.9878,lng:135.7593,areas:["京都府","滋賀県"],types:["新築","リフォーム","個人"],phone:"075-987-6543",email:"",website:"",imageUrl:"",hasCases:true,comment:"",cases:11,rating:4.9,reviewCount:14,reviews:[]}
+];
+
+/* ==================================================
+   State
+   ================================================== */
+let contractors = [];
+let editingId   = null; // null=新規, string=編集中のID
+
+/* ==================================================
+   Lock / Unlock
+   ================================================== */
+function unlock() {
+  const pw = document.getElementById("lockPw").value;
+  if (pw === ADMIN_PW) {
+    document.getElementById("lockScreen").style.display  = "none";
+    document.getElementById("adminLayout").classList.add("open");
+    loadContractors();
+    renderStats();
+    renderTable();
+  } else {
+    const err = document.getElementById("lockErr");
+    err.classList.add("show");
+    setTimeout(() => err.classList.remove("show"), 2500);
+  }
+}
+function logout() {
+  if (!confirm("ログアウトしますか？")) return;
+  location.reload();
+}
+document.getElementById("lockPw").addEventListener("keydown", e => {
+  if (e.key === "Enter") unlock();
+});
+
+/* ==================================================
+   Data
+   ================================================== */
+function loadContractors() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    contractors = raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(SEED_DATA));
+    if (!raw) localStorage.setItem(STORE_KEY, JSON.stringify(contractors));
+  } catch (e) {
+    contractors = JSON.parse(JSON.stringify(SEED_DATA));
+  }
+}
+function saveContractors() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(contractors));
+}
+
+/* ==================================================
+   Stats
+   ================================================== */
+function renderStats() {
+  document.getElementById("s-total").textContent = contractors.length;
+  document.getElementById("s-prefs").textContent = new Set(contractors.map(c => c.pref)).size;
+  document.getElementById("s-has").textContent   = contractors.filter(c => c.hasCases).length;
+  document.getElementById("s-imgs").textContent  = contractors.filter(c => c.imageUrl).length;
+}
+
+/* ==================================================
+   Table
+   ================================================== */
+function renderTable() {
+  const q = (document.getElementById("tableSearch").value || "").toLowerCase();
+  const list = q
+    ? contractors.filter(c =>
+        c.name.toLowerCase().includes(q) ||
+        c.address.toLowerCase().includes(q) ||
+        c.pref.toLowerCase().includes(q)
+      )
+    : contractors.slice();
+
+  const tbody = document.getElementById("adminTableBody");
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="5">該当する業者がありません</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(c => `
+    <tr>
+      <td>
+        <div class="td-thumb">
+          ${c.imageUrl ? `<img src="${escHTML(c.imageUrl)}" alt="" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover">` : ""}
+        </div>
+      </td>
+      <td>
+        <div class="td-name">${escHTML(c.name)}</div>
+        <div class="td-sub">${escHTML(c.address)}</div>
+      </td>
+      <td>${escHTML(c.pref)}</td>
+      <td>
+        <span class="badge ${c.hasCases ? "badge-has" : "badge-none"}">
+          ${c.hasCases ? "✓ " + (c.cases || 0) + "件" : "未登録"}
+        </span>
+      </td>
+      <td>
+        <div class="row-actions">
+          <button class="btn btn-outline btn-sm" onclick="openEditModal('${c.id}')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            編集
+          </button>
+          <button class="btn btn-sm" style="color:var(--c-red);border:1.5px solid #FDBDBA;background:#fff" onclick="deleteRecord('${c.id}')">削除</button>
+        </div>
+      </td>
+    </tr>`).join("");
+}
+
+/* ==================================================
+   Modal: Add
+   ================================================== */
+function openAddModal() {
+  editingId = null;
+  document.getElementById("editModalTitle").textContent = "業者を追加";
+  document.getElementById("editSaveLbl").textContent = "追加する";
+  document.getElementById("editMsg").className = "form-msg";
+  clearForm();
+  openModal();
+}
+
+/* ==================================================
+   Modal: Edit
+   ================================================== */
+function openEditModal(id) {
+  const c = contractors.find(x => x.id === id);
+  if (!c) return;
+  editingId = id;
+  document.getElementById("editModalTitle").textContent = "業者情報の編集";
+  document.getElementById("editSaveLbl").textContent = "保存する";
+  document.getElementById("editMsg").className = "form-msg";
+
+  document.getElementById("f_imageUrl").value = c.imageUrl  || "";
+  document.getElementById("f_name").value     = c.name      || "";
+  document.getElementById("f_pref").value     = c.pref      || "";
+  document.getElementById("f_address").value  = c.address   || "";
+  document.getElementById("f_lat").value      = c.lat       || "";
+  document.getElementById("f_lng").value      = c.lng       || "";
+  document.getElementById("f_areas").value    = (c.areas || []).join(", ");
+  document.getElementById("f_phone").value    = c.phone     || "";
+  document.getElementById("f_email").value    = c.email     || "";
+  document.getElementById("f_web").value      = c.website   || "";
+  document.getElementById("f_comment").value  = c.comment   || "";
+  document.getElementById("f_has").checked    = !!c.hasCases;
+  document.getElementById("f_cases").value    = c.cases     || 0;
+  document.querySelectorAll("input[name='f_types']").forEach(cb => {
+    cb.checked = (c.types || []).includes(cb.value);
+  });
+  previewImg(c.imageUrl || "");
+  openModal();
+}
+
+/* ==================================================
+   Save
+   ================================================== */
+function saveRecord() {
+  const msg = document.getElementById("editMsg");
+  const name    = document.getElementById("f_name").value.trim();
+  const pref    = document.getElementById("f_pref").value.trim();
+  const address = document.getElementById("f_address").value.trim();
+  const lat     = parseFloat(document.getElementById("f_lat").value);
+  const lng     = parseFloat(document.getElementById("f_lng").value);
+  const areas   = document.getElementById("f_areas").value.split(",").map(s => s.trim()).filter(Boolean);
+
+  if (!name || !pref || !address) {
+    msg.className = "form-msg ng";
+    msg.textContent = "会社名・都道府県・住所は必須です。";
+    return;
+  }
+  if (!lat || !lng) {
+    msg.className = "form-msg ng";
+    msg.textContent = "緯度・経度を入力してください。Google Maps で住所を検索し、URLの @緯度,経度 を確認してください。";
+    return;
+  }
+
+  const data = {
+    name,
+    pref,
+    address,
+    lat,
+    lng,
+    areas,
+    types: [...document.querySelectorAll("input[name='f_types']:checked")].map(cb => cb.value),
+    phone:    document.getElementById("f_phone").value.trim(),
+    email:    document.getElementById("f_email").value.trim(),
+    website:  document.getElementById("f_web").value.trim(),
+    imageUrl: document.getElementById("f_imageUrl").value.trim(),
+    comment:  document.getElementById("f_comment").value.trim(),
+    hasCases: document.getElementById("f_has").checked,
+    cases:    parseInt(document.getElementById("f_cases").value) || 0,
+  };
+
+  if (editingId) {
+    // 編集：既存データを保持しつつ上書き
+    const i = contractors.findIndex(x => x.id === editingId);
+    if (i >= 0) {
+      contractors[i] = { ...contractors[i], ...data };
+    }
+  } else {
+    // 新規追加
+    data.id = "c" + Date.now().toString().slice(-6);
+    data.rating = 0; data.reviewCount = 0; data.reviews = [];
+    contractors.push(data);
+  }
+
+  saveContractors();
+  renderStats();
+  renderTable();
+  msg.className = "form-msg ok";
+  msg.textContent = editingId ? "保存しました。" : `「${name}」を追加しました。`;
+  setTimeout(() => closeModal(), 1000);
+}
+
+/* ==================================================
+   Delete
+   ================================================== */
+function deleteRecord(id) {
+  const c = contractors.find(x => x.id === id);
+  if (!c) return;
+  if (!confirm(`「${c.name}」を削除します。\nこの操作は取り消せません。よろしいですか？`)) return;
+  contractors = contractors.filter(x => x.id !== id);
+  saveContractors();
+  renderStats();
+  renderTable();
+}
+
+/* ==================================================
+   Export / Import / Reset
+   ================================================== */
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(contractors, null, 2)], { type: "application/json" });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  a.href = url;
+  a.download = `passiv-blind-contractors-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function importJSON(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data)) throw new Error("配列でないデータです");
+      if (!confirm(`${data.length}件のデータで現在のデータを上書きします。\nよろしいですか？`)) return;
+      contractors = data;
+      saveContractors();
+      renderStats();
+      renderTable();
+      alert("読み込みが完了しました。");
+    } catch (err) {
+      alert("読み込みエラー: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+  ev.target.value = "";
+}
+function confirmReset() {
+  if (!confirm("すべてのデータを初期（10件のサンプル）に戻します。\nこの操作は取り消せません。よろしいですか？")) return;
+  localStorage.removeItem(STORE_KEY);
+  loadContractors();
+  renderStats();
+  renderTable();
+  alert("初期化しました。");
+}
+
+/* ==================================================
+   Image Preview
+   ================================================== */
+function previewImg(url) {
+  const img = document.getElementById("imgPreviewImg");
+  const ph  = document.getElementById("imgPreviewPh");
+  if (url && url.startsWith("http")) {
+    img.src = url;
+    img.classList.remove("loaded");
+    ph.style.display = "none";
+    img.onload  = () => ph.style.display = "none";
+    img.onerror = () => { ph.style.display = "flex"; img.classList.remove("loaded"); };
+  } else {
+    img.src = "";
+    img.classList.remove("loaded");
+    ph.style.display = "flex";
+  }
+}
+
+/* ==================================================
+   Helpers
+   ================================================== */
+function clearForm() {
+  ["f_imageUrl","f_name","f_pref","f_address","f_lat","f_lng","f_areas",
+   "f_phone","f_email","f_web","f_comment"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  document.getElementById("f_has").checked   = false;
+  document.getElementById("f_cases").value   = 0;
+  document.querySelectorAll("input[name='f_types']").forEach(cb => cb.checked = false);
+  previewImg("");
+}
+function openModal() {
+  document.getElementById("editModal").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeModal() {
+  document.getElementById("editModal").classList.remove("open");
+  document.body.style.overflow = "";
+  editingId = null;
+}
+document.getElementById("editModal").addEventListener("click", e => {
+  if (e.target === document.getElementById("editModal")) closeModal();
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeModal();
+});
+function escHTML(s) {
+  if (s == null) return "";
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+</script>
+</body>
+</html>
