@@ -6,13 +6,16 @@
 <meta name="description" content="全国のpassiv blind外付けブラインド施工業者をエリアから検索。">
 <title>施工業者マップ | Passiv Blind</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <style>
-/* ==================================================
+/* ============================================================
    Design Tokens
-   ================================================== */
+   ============================================================ */
 :root {
   --c-bg:       #FFFFFF;
   --c-bg-soft:  #F5F5F7;
@@ -25,280 +28,135 @@
   --c-pin:      #C8342B;
   --c-warn-bg:  #FFF9E6;
   --c-warn-text:#8A6A1F;
-
   --shadow-xs: 0 1px 3px rgba(0,0,0,.06);
   --shadow-sm: 0 2px 8px rgba(0,0,0,.08);
   --shadow-md: 0 4px 20px rgba(0,0,0,.10);
   --shadow-lg: 0 8px 40px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.06);
   --shadow-xl: 0 20px 60px rgba(0,0,0,.14), 0 4px 16px rgba(0,0,0,.08);
-
   --font: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
   --r-sm: 6px; --r-md: 10px; --r-lg: 16px; --r-xl: 20px; --r-pill: 980px;
   --ease: cubic-bezier(.22,.61,.36,1);
   --max-w: 1140px;
   --header-h: 60px;
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-body {
-  font-family: var(--font);
-  color: var(--c-text);
-  background: var(--c-bg);
-  line-height: 1.65;
-  letter-spacing: -0.003em;
-  -webkit-font-smoothing: antialiased;
-}
+body { font-family: var(--font); color: var(--c-text); background: var(--c-bg); line-height: 1.65; letter-spacing: -0.003em; -webkit-font-smoothing: antialiased; }
 img { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
 input, select, textarea { font: inherit; color: inherit; }
-
 .container { max-width: var(--max-w); margin: 0 auto; padding: 0 40px; }
 
-/* ==================================================
+/* ============================================================
    Buttons
-   ================================================== */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-  padding: 10px 20px; border-radius: var(--r-md);
-  font-size: 13.5px; font-weight: 600; letter-spacing: -0.005em;
-  transition: all .2s var(--ease); white-space: nowrap;
-}
+   ============================================================ */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 20px; border-radius: var(--r-md); font-size: 13.5px; font-weight: 600; letter-spacing: -0.005em; transition: all .2s var(--ease); white-space: nowrap; }
 .btn-sm  { padding: 7px 14px; font-size: 12.5px; }
 .btn-lg  { padding: 13px 26px; font-size: 15px; }
-.btn-pill{ border-radius: var(--r-pill); }
-.btn-dark   { background: var(--c-text); color: #fff; }
-.btn-dark:hover { background: #333; }
-.btn-ghost  { color: var(--c-text-sub); }
-.btn-ghost:hover { color: var(--c-text); background: var(--c-bg-soft); }
-.btn-outline{ border: 1.5px solid var(--c-line-mid); color: var(--c-text); background: #fff; }
-.btn-outline:hover { border-color: var(--c-text); background: var(--c-bg-soft); }
+.btn-pill { border-radius: var(--r-pill); }
+.btn-dark { background: var(--c-text); color: #fff; } .btn-dark:hover { background: #333; }
+.btn-ghost { color: var(--c-text-sub); } .btn-ghost:hover { color: var(--c-text); background: var(--c-bg-soft); }
+.btn-outline { border: 1.5px solid var(--c-line-mid); color: var(--c-text); background: #fff; } .btn-outline:hover { border-color: var(--c-text); background: var(--c-bg-soft); }
 
-/* ==================================================
+/* ============================================================
    Header
-   ================================================== */
-.site-header {
-  position: sticky; top: 0; z-index: 200;
-  background: rgba(255,255,255,.96);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--c-line);
-  height: var(--header-h); display: flex; align-items: center;
-}
-.header-inner {
-  max-width: var(--max-w); margin: 0 auto; padding: 0 40px;
-  width: 100%; display: flex; align-items: center; gap: 32px;
-}
+   ============================================================ */
+.site-header { position: sticky; top: 0; z-index: 200; background: rgba(255,255,255,.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--c-line); height: var(--header-h); display: flex; align-items: center; }
+.header-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 40px; width: 100%; display: flex; align-items: center; gap: 32px; }
 .header-logo { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
 .logo-icon { width: 32px; height: 32px; border-radius: 6px; overflow: hidden; background: #EDEAE2; }
 .logo-icon img { width: 100%; height: 100%; object-fit: cover; }
 .logo-name { font-size: 14.5px; font-weight: 700; letter-spacing: -0.01em; line-height: 1; }
 .logo-sub  { font-size: 10px; color: var(--c-text-mute); line-height: 1; margin-top: 3px; }
-
-.header-nav {
-  flex: 1; display: flex; align-items: center; justify-content: center; gap: 2px;
-}
-.header-nav a {
-  font-size: 13.5px; font-weight: 500; color: var(--c-text-sub);
-  padding: 6px 14px; border-radius: var(--r-md); transition: all .18s;
-}
+.header-nav { flex: 1; display: flex; align-items: center; justify-content: center; gap: 2px; }
+.header-nav a { font-size: 13.5px; font-weight: 500; color: var(--c-text-sub); padding: 6px 14px; border-radius: var(--r-md); transition: all .18s; }
 .header-nav a:hover { color: var(--c-text); background: var(--c-bg-soft); }
 .header-nav a.active { color: var(--c-text); font-weight: 600; }
-
 .header-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
-.header-admin { font-size: 12.5px; color: var(--c-text-mute); padding: 6px 10px; border-radius: var(--r-md); transition: all .18s; }
-.header-admin:hover { color: var(--c-text); background: var(--c-bg-soft); }
 
-/* ==================================================
+/* ============================================================
    Hero
-   ================================================== */
-.hero {
-  position: relative; overflow: hidden;
-  height: 520px; display: flex; align-items: flex-end;
-}
-.hero-bg {
-  position: absolute; inset: 0;
-  background-image: url("hero.jpg");
-  background-size: cover; background-position: center 30%;
-  animation: heroZoom 16s ease-out forwards;
-}
-@keyframes heroZoom { from { transform:scale(1.06) } to { transform:scale(1) } }
-.hero-ov-l {
-  position: absolute; inset: 0;
-  background: linear-gradient(105deg,rgba(12,12,12,.82) 0%,rgba(12,12,12,.64) 36%,rgba(12,12,12,.24) 62%,transparent 85%);
-}
-.hero-ov-b {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 160px;
-  background: linear-gradient(to top,rgba(0,0,0,.28) 0%,transparent 100%);
-}
-.hero-inner {
-  position: relative; z-index: 2; width: 100%;
-  padding: 0 40px 72px;
-}
-.hero-title {
-  font-size: clamp(34px, 4.6vw, 58px); font-weight: 800;
-  line-height: 1.16; letter-spacing: -0.03em; color: #fff;
-  margin-bottom: 16px;
-}
-.hero-lead {
-  font-size: 15px; color: rgba(255,255,255,.82); line-height: 1.85;
-  margin-bottom: 28px; max-width: 440px;
-}
+   ============================================================ */
+.hero { position: relative; overflow: hidden; height: 500px; display: flex; align-items: flex-end; }
+.hero-slide { position: absolute; inset: 0; background-size: cover; background-position: center 30%; opacity: 0; transition: opacity 1.6s ease-in-out; }
+.hero-slide.active { opacity: 1; }
+@keyframes heroZoom { from { transform:scale(1.07) } to { transform:scale(1) } }
+.hero-slide.zooming { animation: heroZoom 18s ease-out forwards; }
+.hero-ov-l { position: absolute; inset: 0; background: linear-gradient(105deg,rgba(12,12,12,.82) 0%,rgba(12,12,12,.64) 36%,rgba(12,12,12,.24) 62%,transparent 85%); }
+.hero-ov-b { position: absolute; bottom: 0; left: 0; right: 0; height: 160px; background: linear-gradient(to top,rgba(0,0,0,.28) 0%,transparent 100%); }
+.hero-inner { position: relative; z-index: 2; width: 100%; padding: 0 40px 80px; }
+.hero-title { font-size: clamp(34px, 4.6vw, 58px); font-weight: 800; line-height: 1.16; letter-spacing: -0.03em; color: #fff; margin-bottom: 16px; }
+.hero-lead { font-size: 15px; color: rgba(255,255,255,.82); line-height: 1.85; margin-bottom: 28px; max-width: 440px; }
 .hero-badges { display: flex; gap: 12px; flex-wrap: wrap; }
-.hero-badge {
-  display: flex; align-items: center; gap: 7px;
-  background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.22);
-  backdrop-filter: blur(8px);
-  padding: 7px 14px; border-radius: var(--r-pill);
-  font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,.94);
-}
-.hero-stats {
-  position: absolute; z-index: 2; bottom: 28px; right: 40px;
-  display: flex; gap: 28px;
-}
-.hero-stat-num   { font-size: 26px; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -0.02em; }
-.hero-stat-label { font-size: 10px; letter-spacing: .12em; color: rgba(255,255,255,.6); margin-top: 4px; }
+.hero-badge { display: flex; align-items: center; gap: 7px; background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.22); backdrop-filter: blur(8px); padding: 7px 14px; border-radius: var(--r-pill); font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,.94); }
 
-/* ==================================================
+/* 統計ボックス */
+.hero-stats { position: absolute; z-index: 2; bottom: 100px; right: 40px; display: flex; gap: 10px; }
+.hero-stat { display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,.42); border: 1px solid rgba(255,255,255,.15); border-radius: 10px; padding: 14px 22px; gap: 4px; min-width: 88px; }
+.hero-stat-label { font-size: 11px; font-weight: 500; color: rgba(255,255,255,.80); letter-spacing: .04em; white-space: nowrap; line-height: 1; }
+.hero-stat-num { font-size: 30px; font-weight: 700; color: #fff; line-height: 1; letter-spacing: -0.02em; text-shadow: 0 2px 12px rgba(0,0,0,.5); }
+
+/* スライドドット */
+.slide-dots { position: absolute; z-index: 3; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 7px; }
+.slide-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.38); border: none; cursor: pointer; transition: all .3s; padding: 0; }
+.slide-dot.active { width: 22px; border-radius: 3px; background: rgba(255,255,255,.9); }
+
+/* ============================================================
    Search Card（ヒーロー下部にオーバーラップ）
-   ================================================== */
-.search-wrap {
-  background: var(--c-bg);
-  padding: 0 40px 56px;
-  margin-top: -48px;
-  position: relative; z-index: 10;
-}
-.search-card {
-  max-width: 860px; margin: 0 auto;
-  background: #fff; border-radius: var(--r-xl);
-  box-shadow: var(--shadow-xl); padding: 26px 28px;
-  border: 1px solid var(--c-line);
-}
-.search-card-title {
-  font-size: 15.5px; font-weight: 700; color: var(--c-text); margin-bottom: 16px; letter-spacing: -0.01em;
-}
-.search-row {
-  display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px;
-  align-items: center; margin-bottom: 14px;
-}
+   ============================================================ */
+.search-wrap { background: var(--c-bg); padding: 0 40px 56px; margin-top: -48px; position: relative; z-index: 10; }
+.search-card { max-width: 860px; margin: 0 auto; background: #fff; border-radius: var(--r-xl); box-shadow: var(--shadow-xl); padding: 26px 28px; border: 1px solid var(--c-line); }
+.search-card-title { font-size: 15.5px; font-weight: 700; color: var(--c-text); margin-bottom: 16px; letter-spacing: -0.01em; }
+.search-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: center; margin-bottom: 14px; }
 .sel-wrap { position: relative; }
-.sel-wrap .sel-icon {
-  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-  width: 15px; height: 15px; color: var(--c-text-mute); pointer-events: none;
-}
-.sel-wrap select {
-  width: 100%; padding: 10px 14px 10px 34px;
-  border: 1px solid var(--c-line-mid); border-radius: var(--r-md);
-  font-size: 13.5px; background: #fff; outline: none;
-  appearance: none; -webkit-appearance: none; cursor: pointer;
-  color: var(--c-text-sub); transition: border-color .2s;
-}
+.sel-wrap .sel-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--c-text-mute); pointer-events: none; }
+.sel-wrap select { width: 100%; padding: 10px 14px 10px 34px; border: 1px solid var(--c-line-mid); border-radius: var(--r-md); font-size: 13.5px; background: #fff; outline: none; appearance: none; -webkit-appearance: none; cursor: pointer; color: var(--c-text-sub); transition: border-color .2s; }
 .sel-wrap select:focus { border-color: var(--c-text); color: var(--c-text); }
-.sel-wrap .sel-chev {
-  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-  color: var(--c-text-mute); pointer-events: none;
-}
-.search-exec {
-  padding: 10px 24px; background: var(--c-text); color: #fff;
-  border-radius: var(--r-md); font-size: 14px; font-weight: 600;
-  display: flex; align-items: center; gap: 7px; white-space: nowrap; transition: background .2s;
-}
-.search-exec:hover { background: #333; }
-.search-popular {
-  display: flex; align-items: center; gap: 7px; flex-wrap: wrap; font-size: 12.5px;
-}
+.sel-wrap .sel-chev { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--c-text-mute); pointer-events: none; }
+.search-exec { padding: 10px 24px; background: var(--c-text); color: #fff; border-radius: var(--r-md); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 7px; white-space: nowrap; transition: background .2s; } .search-exec:hover { background: #333; }
+.search-popular { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; font-size: 12.5px; }
 .search-popular-lbl { color: var(--c-text-mute); font-weight: 500; flex-shrink: 0; }
-.search-popular a { color: var(--c-text-sub); transition: color .18s; padding: 2px 0; }
-.search-popular a:hover { color: var(--c-text); }
+.search-popular a { color: var(--c-text-sub); transition: color .18s; padding: 2px 0; } .search-popular a:hover { color: var(--c-text); }
 
-/* ==================================================
-   地図セクション
-   ================================================== */
+/* ============================================================
+   Map Section
+   ============================================================ */
 .map-section { padding: 0 0 64px; }
 .map-section-container { max-width: var(--max-w); margin: 0 auto; padding: 0 40px; }
-.map-section-head {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  margin-bottom: 20px;
-}
-.map-section-head h2 {
-  font-size: 22px; font-weight: 700; letter-spacing: -0.015em;
-}
+.map-section-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; }
+.map-section-head h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.015em; }
 .map-section-head .sub { font-size: 13px; color: var(--c-text-mute); margin-top: 4px; }
 
-/* ツールバー */
-.map-toolbar {
-  display: grid; grid-template-columns: 1fr auto;
-  gap: 10px; padding: 13px 16px;
-  background: var(--c-bg-soft); border: 1px solid var(--c-line);
-  border-radius: var(--r-lg) var(--r-lg) 0 0; border-bottom: none;
-  align-items: center;
-}
+.map-toolbar { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 13px 16px; background: var(--c-bg-soft); border: 1px solid var(--c-line); border-radius: var(--r-lg) var(--r-lg) 0 0; border-bottom: none; align-items: center; }
 .search-field { position: relative; display: flex; align-items: center; }
 .search-field svg { position: absolute; left: 12px; width: 15px; height: 15px; color: var(--c-text-mute); pointer-events: none; }
-.search-field input {
-  width: 100%; padding: 10px 12px 10px 36px;
-  background: #fff; border: 1px solid var(--c-line-mid); border-radius: var(--r-pill);
-  font-size: 13.5px; outline: none; transition: all .2s;
-}
+.search-field input { width: 100%; padding: 10px 12px 10px 36px; background: #fff; border: 1px solid var(--c-line-mid); border-radius: var(--r-pill); font-size: 13.5px; outline: none; transition: all .2s; }
 .search-field input:focus { border-color: var(--c-text); box-shadow: 0 0 0 3px rgba(0,0,0,.06); }
-
 .toolbar-right { display: flex; gap: 6px; }
-.chip-btn {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 8px 15px; background: #fff; border: 1px solid var(--c-line-mid);
-  border-radius: var(--r-pill); font-size: 12.5px; color: var(--c-text-sub); transition: all .2s;
-}
+.chip-btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 15px; background: #fff; border: 1px solid var(--c-line-mid); border-radius: var(--r-pill); font-size: 12.5px; color: var(--c-text-sub); transition: all .2s; }
 .chip-btn:hover { border-color: var(--c-text); color: var(--c-text); }
 .chip-btn.active { background: var(--c-text); color: #fff; border-color: var(--c-text); }
 .chip-btn .cnt { background: rgba(255,255,255,.2); padding: 1px 6px; border-radius: var(--r-pill); font-size: 10.5px; font-weight: 600; }
 
-/* フィルタパネル */
-.filter-panel {
-  display: none; padding: 14px 16px; background: var(--c-bg-soft);
-  border: 1px solid var(--c-line); border-bottom: none; gap: 24px; flex-wrap: wrap;
-}
+.filter-panel { display: none; padding: 14px 16px; background: var(--c-bg-soft); border: 1px solid var(--c-line); border-bottom: none; gap: 24px; flex-wrap: wrap; }
 .filter-panel.open { display: flex; }
 .filter-group { display: flex; flex-direction: column; gap: 7px; min-width: 180px; }
 .filter-label { font-size: 10.5px; letter-spacing: .14em; color: var(--c-text-mute); text-transform: uppercase; font-weight: 600; }
 .filter-chips { display: flex; flex-wrap: wrap; gap: 5px; }
-.chip {
-  padding: 5px 12px; border: 1px solid var(--c-line-mid); border-radius: var(--r-pill);
-  background: #fff; font-size: 12.5px; color: var(--c-text-sub); transition: all .2s;
-}
+.chip { padding: 5px 12px; border: 1px solid var(--c-line-mid); border-radius: var(--r-pill); background: #fff; font-size: 12.5px; color: var(--c-text-sub); transition: all .2s; }
 .chip:hover { border-color: var(--c-text); color: var(--c-text); }
 .chip.active { background: var(--c-text); color: #fff; border-color: var(--c-text); }
-.filter-select {
-  padding: 7px 10px; border: 1px solid var(--c-line-mid); border-radius: var(--r-md);
-  background: #fff; font-size: 13px; outline: none; min-width: 150px;
-}
 
-/* 地図 */
-.map-wrap {
-  position: relative; border: 1px solid var(--c-line);
-  border-radius: 0 0 var(--r-lg) var(--r-lg); overflow: hidden; background: #E9E6DD;
-}
+.map-wrap { position: relative; border: 1px solid var(--c-line); border-radius: 0 0 var(--r-lg) var(--r-lg); overflow: hidden; background: #E9E6DD; }
 #map { width: 100%; height: 520px; }
-.map-overlay-info {
-  position: absolute; top: 14px; left: 14px; z-index: 500;
-  background: rgba(255,255,255,.96); backdrop-filter: blur(8px);
-  border: 1px solid var(--c-line); border-radius: var(--r-md);
-  padding: 8px 14px; font-size: 12px; color: var(--c-text-sub);
-  box-shadow: var(--shadow-xs); pointer-events: none;
-}
+.map-overlay-info { position: absolute; top: 14px; left: 14px; z-index: 500; background: rgba(255,255,255,.96); backdrop-filter: blur(8px); border: 1px solid var(--c-line); border-radius: var(--r-md); padding: 8px 14px; font-size: 12px; color: var(--c-text-sub); box-shadow: var(--shadow-xs); pointer-events: none; }
 .map-overlay-info strong { color: var(--c-text); font-weight: 700; }
-.map-legend {
-  position: absolute; bottom: 14px; left: 14px; z-index: 500;
-  background: rgba(255,255,255,.96); backdrop-filter: blur(8px);
-  border: 1px solid var(--c-line); border-radius: var(--r-md);
-  padding: 9px 14px; font-size: 11.5px; color: var(--c-text-sub);
-  box-shadow: var(--shadow-xs); display: flex; flex-direction: column; gap: 5px;
-}
+.map-legend { position: absolute; bottom: 14px; left: 14px; z-index: 500; background: rgba(255,255,255,.96); backdrop-filter: blur(8px); border: 1px solid var(--c-line); border-radius: var(--r-md); padding: 9px 14px; font-size: 11.5px; color: var(--c-text-sub); box-shadow: var(--shadow-xs); display: flex; flex-direction: column; gap: 5px; }
 .legend-item { display: flex; align-items: center; gap: 8px; }
 .legend-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1.5px rgba(0,0,0,.14); }
 .legend-dot.pin-has { background: var(--c-pin); }
 .legend-dot.pin-none { background: #9A9891; }
-
-/* ピン */
 .pin-marker { width: 28px; height: 36px; display: flex; align-items: flex-start; justify-content: center; filter: drop-shadow(0 4px 8px rgba(0,0,0,.22)); }
 .pin-marker svg { width: 100%; height: 100%; }
 
@@ -309,7 +167,7 @@ input, select, textarea { font: inherit; color: inherit; }
 .leaflet-popup-close-button { display: none !important; }
 .popup-card { overflow: hidden; border-radius: 16px; }
 .popup-photo { height: 140px; background-size: cover; background-position: center; background-color: #EDEAE2; position: relative; }
-.popup-photo-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.5); font-size: 12px; background: linear-gradient(135deg, #C9BFA8 0%, #8C7B62 100%); }
+.popup-photo-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.5); font-size: 12px; background: linear-gradient(135deg,#C9BFA8 0%,#8C7B62 100%); }
 .popup-badge { position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,.96); color: var(--c-text); font-size: 10px; letter-spacing: .04em; padding: 3px 8px; border-radius: var(--r-pill); font-weight: 700; }
 .popup-badge.none { background: rgba(154,152,145,.96); color: #fff; }
 .popup-close { position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,.92); display: flex; align-items: center; justify-content: center; font-size: 15px; }
@@ -327,36 +185,21 @@ input, select, textarea { font: inherit; color: inherit; }
 .popup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
 .popup-actions .btn { padding: 9px 10px; font-size: 12px; width: 100%; }
 
-/* ==================================================
-   業者一覧
-   ================================================== */
-.list-section {
-  padding: 64px 0 72px;
-  background: var(--c-bg-soft);
-  border-top: 1px solid var(--c-line);
-}
-.list-head {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  margin-bottom: 24px; gap: 16px; flex-wrap: wrap;
-}
+/* ============================================================
+   List Section
+   ============================================================ */
+.list-section { padding: 64px 0 72px; background: var(--c-bg-soft); border-top: 1px solid var(--c-line); }
+.list-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
 .list-head h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.015em; }
 .list-head .sub { font-size: 13px; color: var(--c-text-mute); margin-top: 4px; }
 .sort-wrap { display: flex; gap: 2px; }
 .sort-btn { padding: 6px 12px; color: var(--c-text-mute); border-radius: var(--r-md); font-size: 12.5px; transition: all .15s; }
 .sort-btn.active { color: var(--c-text); background: #fff; font-weight: 600; box-shadow: var(--shadow-xs); }
-
-.list-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-}
-.card {
-  background: #fff; border: 1px solid var(--c-line); border-radius: var(--r-xl);
-  overflow: hidden; transition: all .3s var(--ease); display: flex; flex-direction: column; cursor: pointer;
-}
+.list-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 20px; }
+.card { background: #fff; border: 1px solid var(--c-line); border-radius: var(--r-xl); overflow: hidden; transition: all .3s var(--ease); display: flex; flex-direction: column; cursor: pointer; }
 .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--c-line-mid); }
 .card-photo { height: 170px; background-size: cover; background-position: center; background-color: #EDEAE2; position: relative; }
-.card-ph-img { width: 100%; height: 100%; background: linear-gradient(135deg, #C9BFA8 0%, #8C7B62 100%); }
+.card-ph-img { width: 100%; height: 100%; background: linear-gradient(135deg,#C9BFA8 0%,#8C7B62 100%); }
 .card-badge { position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,.96); color: var(--c-text); font-size: 10px; letter-spacing: .04em; padding: 3px 8px; border-radius: var(--r-pill); font-weight: 700; }
 .card-badge.none { background: rgba(154,152,145,.96); color: #fff; }
 .card-body { padding: 18px 20px 20px; flex: 1; display: flex; flex-direction: column; gap: 7px; }
@@ -366,73 +209,33 @@ input, select, textarea { font: inherit; color: inherit; }
 .card-rating { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--c-text-sub); }
 .card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: auto; padding-top: 12px; }
 .card-tag { font-size: 10.5px; padding: 3px 8px; background: var(--c-bg-soft); color: var(--c-text-sub); border-radius: var(--r-sm); border: 1px solid var(--c-line); }
-
-.no-result {
-  padding: 64px 20px; text-align: center; color: var(--c-text-mute);
-  border: 1px dashed var(--c-line-mid); border-radius: var(--r-xl); background: #fff;
-  grid-column: 1 / -1;
-}
+.no-result { padding: 64px 20px; text-align: center; color: var(--c-text-mute); border: 1px dashed var(--c-line-mid); border-radius: var(--r-xl); background: #fff; grid-column: 1 / -1; }
 .no-result .big { font-size: 17px; font-weight: 700; color: var(--c-text); margin-bottom: 6px; }
-.area-notice {
-  margin: 0 0 20px; padding: 12px 16px; background: var(--c-warn-bg);
-  border: 1px solid #EBD9AD; border-radius: var(--r-md);
-  font-size: 13px; color: var(--c-warn-text);
-}
+.area-notice { margin: 0 0 20px; padding: 12px 16px; background: var(--c-warn-bg); border: 1px solid #EBD9AD; border-radius: var(--r-md); font-size: 13px; color: var(--c-warn-text); }
 
-/* ==================================================
-   信頼バンド
-   ================================================== */
-.trust-band { padding: 56px 0; background: var(--c-bg-warm); border-top: 1px solid var(--c-line); }
-.trust-inner {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
-}
-.trust-item { display: flex; align-items: flex-start; gap: 14px; }
-.trust-icon {
-  width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
-  background: #fff; border: 1.5px solid var(--c-line-mid);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--c-text-sub); box-shadow: var(--shadow-xs);
-}
-.trust-body h4 { font-size: 14px; font-weight: 700; margin-bottom: 5px; letter-spacing: -0.008em; }
-.trust-body p  { font-size: 12.5px; color: var(--c-text-mute); line-height: 1.7; }
-
-/* ==================================================
-   フッター
-   ================================================== */
+/* ============================================================
+   Footer
+   ============================================================ */
 .site-footer { background: var(--c-text); color: rgba(255,255,255,.6); }
-.footer-main {
-  max-width: var(--max-w); margin: 0 auto; padding: 52px 40px 40px;
-  display: grid; grid-template-columns: 1.6fr 1fr 1.2fr; gap: 52px;
-}
+.footer-main { max-width: var(--max-w); margin: 0 auto; padding: 52px 40px 40px; display: grid; grid-template-columns: 1.6fr 1fr 1.2fr; gap: 52px; }
 .footer-brand-name { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 3px; }
 .footer-brand-sub  { font-size: 11px; color: rgba(255,255,255,.4); margin-bottom: 14px; }
 .footer-desc { font-size: 12.5px; line-height: 1.9; color: rgba(255,255,255,.5); }
 .footer-col h4 { font-size: 11.5px; font-weight: 700; color: rgba(255,255,255,.8); margin-bottom: 14px; letter-spacing: .04em; }
 .footer-links, .footer-contact { list-style: none; display: flex; flex-direction: column; gap: 9px; }
-.footer-links a { font-size: 13px; color: rgba(255,255,255,.5); transition: color .18s; }
-.footer-links a:hover { color: #fff; }
+.footer-links a { font-size: 13px; color: rgba(255,255,255,.5); transition: color .18s; } .footer-links a:hover { color: #fff; }
 .footer-contact li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,.5); }
 .footer-contact svg { color: rgba(255,255,255,.35); flex-shrink: 0; }
-.footer-contact a { color: rgba(255,255,255,.5); transition: color .18s; }
-.footer-contact a:hover { color: #fff; }
+.footer-contact a { color: rgba(255,255,255,.5); transition: color .18s; } .footer-contact a:hover { color: #fff; }
 .footer-bottom { border-top: 1px solid rgba(255,255,255,.1); }
-.footer-bottom-inner {
-  max-width: var(--max-w); margin: 0 auto; padding: 16px 40px;
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: 11.5px; color: rgba(255,255,255,.3); flex-wrap: wrap; gap: 8px;
-}
+.footer-bottom-inner { max-width: var(--max-w); margin: 0 auto; padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: rgba(255,255,255,.3); flex-wrap: wrap; gap: 8px; }
 .footer-legal { display: flex; gap: 18px; }
-.footer-legal a { color: rgba(255,255,255,.3); transition: color .18s; }
-.footer-legal a:hover { color: rgba(255,255,255,.65); }
+.footer-legal a { color: rgba(255,255,255,.3); transition: color .18s; } .footer-legal a:hover { color: rgba(255,255,255,.65); }
 
-/* ==================================================
-   モーダル共通
-   ================================================== */
-.modal-backdrop {
-  position: fixed; inset: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(5px);
-  z-index: 1000; display: none; align-items: center; justify-content: center;
-  padding: 20px; overflow-y: auto;
-}
+/* ============================================================
+   Modals
+   ============================================================ */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(5px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
 .modal-backdrop.open { display: flex; animation: fadeIn .22s var(--ease); }
 @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
 @keyframes slideUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
@@ -444,15 +247,14 @@ input, select, textarea { font: inherit; color: inherit; }
 .modal-close { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--c-text-mute); font-size: 20px; flex-shrink: 0; transition: all .18s; }
 .modal-close:hover { background: var(--c-bg-soft); color: var(--c-text); }
 .modal-body { padding: 20px 24px 24px; }
-
 .detail-photo { height: 230px; background-size: cover; background-position: center; margin: -20px -24px 16px; }
-.detail-photo-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.5); font-size: 13px; background: linear-gradient(135deg, #C9BFA8 0%, #8C7B62 100%); }
+.detail-photo-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.5); font-size: 13px; background: linear-gradient(135deg,#C9BFA8 0%,#8C7B62 100%); }
 .detail-info-grid { display: grid; grid-template-columns: 100px 1fr; gap: 7px 16px; padding: 14px 0; border-top: 1px solid var(--c-line); border-bottom: 1px solid var(--c-line); margin-bottom: 16px; font-size: 13px; }
 .detail-info-grid dt { color: var(--c-text-mute); font-size: 10.5px; letter-spacing: .1em; padding-top: 2px; font-weight: 600; }
 .detail-info-grid dd { margin: 0; color: var(--c-text); }
 .detail-cases h4 { font-size: 14px; font-weight: 700; margin: 0 0 9px; }
-.case-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 6px; }
-.case-thumb.placeholder { aspect-ratio: 1; border-radius: var(--r-sm); background: linear-gradient(135deg, #EDEAE2 0%, #DCD8CE 100%); border: 1px solid var(--c-line); display: flex; align-items: center; justify-content: center; color: var(--c-text-mute); font-size: 9.5px; }
+.case-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(80px,1fr)); gap: 6px; }
+.case-thumb.placeholder { aspect-ratio: 1; border-radius: var(--r-sm); background: linear-gradient(135deg,#EDEAE2 0%,#DCD8CE 100%); border: 1px solid var(--c-line); display: flex; align-items: center; justify-content: center; color: var(--c-text-mute); font-size: 9.5px; }
 .review-list { display: flex; flex-direction: column; gap: 9px; margin-top: 9px; }
 .review-item { padding: 12px 14px; background: var(--c-bg-soft); border-radius: var(--r-md); }
 .review-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
@@ -466,7 +268,6 @@ input, select, textarea { font: inherit; color: inherit; }
 .star-input:hover button { color: #E6B800; }
 .star-input:hover button:hover ~ button { color: #D4D2CC; }
 .star-input:not(:hover) button.active { color: #E6B800; }
-
 .form-grid { display: grid; gap: 15px; }
 .form-row { display: grid; gap: 5px; }
 .form-row label { font-size: 11.5px; letter-spacing: .07em; color: var(--c-text-sub); font-weight: 600; }
@@ -483,31 +284,29 @@ input, select, textarea { font: inherit; color: inherit; }
 .form-msg { padding: 10px 13px; border-radius: var(--r-md); font-size: 13px; margin-bottom: 14px; display: none; }
 .form-msg.ok { background: #E8F5E9; color: #1B5E20; display: block; }
 .form-msg.ng { background: #FDECEA; color: #8B1F16; display: block; }
-
 .spinner { width: 13px; height: 13px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; vertical-align: middle; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ==================================================
-   レスポンシブ
-   ================================================== */
+/* ============================================================
+   Responsive
+   ============================================================ */
 @media (max-width: 1000px) {
   .container, .header-inner, .map-section-container, .footer-main, .footer-bottom-inner { padding-left: 24px; padding-right: 24px; }
   .search-wrap { padding-left: 24px; padding-right: 24px; }
   .hero-inner { padding-left: 24px; padding-right: 24px; }
   .hero-stats { right: 24px; }
-  .trust-inner { grid-template-columns: 1fr 1fr; }
   .footer-main { grid-template-columns: 1fr 1fr; gap: 32px; }
 }
 @media (max-width: 700px) {
   .header-nav { display: none; }
   .header-inner { padding: 0 20px; }
-  .hero { height: 380px; }
+  .hero { height: 440px; }
   .hero-title { font-size: clamp(28px, 7vw, 42px); }
   .hero-stats { display: none; }
   .hero-badges { display: none; }
   .hero-inner { padding: 0 20px 52px; }
   .search-wrap { padding: 0 16px 44px; margin-top: -36px; }
-  .search-card { padding: 18px 18px; }
+  .search-card { padding: 18px; }
   .search-row { grid-template-columns: 1fr; gap: 8px; }
   .map-section-container { padding: 0 16px; }
   .map-toolbar { grid-template-columns: 1fr; }
@@ -516,8 +315,6 @@ input, select, textarea { font: inherit; color: inherit; }
   .list-section { padding: 48px 0 56px; }
   .container { padding: 0 16px; }
   .list-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-  .trust-inner { grid-template-columns: 1fr; }
-  .trust-band { padding: 44px 0; }
   .footer-main { grid-template-columns: 1fr; gap: 28px; padding: 40px 20px 28px; }
   .footer-bottom-inner { padding: 14px 20px; flex-direction: column; text-align: center; }
 }
@@ -531,11 +328,11 @@ input, select, textarea { font: inherit; color: inherit; }
 </head>
 <body>
 
-<!-- ===================== HEADER ===================== -->
+<!-- ========== HEADER ========== -->
 <header class="site-header">
   <div class="header-inner">
     <a href="#" class="header-logo">
-      <div class="logo-icon"><img src="hero.jpg" alt=""></div>
+      <div class="logo-icon"><img src="https://picsum.photos/seed/blind-facade1/64/64" alt=""></div>
       <div>
         <div class="logo-name">ブラインド施工業者一覧</div>
         <div class="logo-sub">信頼できるプロを、かんたんに検索</div>
@@ -545,7 +342,6 @@ input, select, textarea { font: inherit; color: inherit; }
       <a href="#" class="active">ホーム</a>
       <a href="#map-section">業者を探す</a>
       <a href="#list-section">業者一覧</a>
-      <a href="#trust-section">ご利用について</a>
     </nav>
     <div class="header-actions">
       <button class="btn btn-dark btn-pill" style="font-size:13px;padding:8px 18px;" onclick="openRegisterModal()">業者の方はこちら</button>
@@ -553,9 +349,9 @@ input, select, textarea { font: inherit; color: inherit; }
   </div>
 </header>
 
-<!-- ===================== HERO ===================== -->
-<section class="hero">
-  <div class="hero-bg"></div>
+<!-- ========== HERO ========== -->
+<section class="hero" id="hero">
+  <div id="heroSlides"></div>
   <div class="hero-ov-l"></div>
   <div class="hero-ov-b"></div>
   <div class="hero-inner">
@@ -578,21 +374,22 @@ input, select, textarea { font: inherit; color: inherit; }
   </div>
   <div class="hero-stats">
     <div class="hero-stat">
-      <div class="hero-stat-num" id="stat-total">—</div>
       <div class="hero-stat-label">登録業者数</div>
+      <div class="hero-stat-num" id="stat-total">—</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num" id="stat-prefs">—</div>
       <div class="hero-stat-label">対応都道府県</div>
+      <div class="hero-stat-num" id="stat-prefs">—</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num" id="stat-cases">—</div>
       <div class="hero-stat-label">施工実績</div>
+      <div class="hero-stat-num" id="stat-cases">—</div>
     </div>
   </div>
+  <div class="slide-dots" id="slideDots"></div>
 </section>
 
-<!-- ===================== SEARCH CARD ===================== -->
+<!-- ========== SEARCH CARD ========== -->
 <div class="search-wrap">
   <div class="search-card">
     <div class="search-card-title">業者を探す</div>
@@ -634,7 +431,7 @@ input, select, textarea { font: inherit; color: inherit; }
   </div>
 </div>
 
-<!-- ===================== MAP ===================== -->
+<!-- ========== MAP ========== -->
 <section class="map-section" id="map-section">
   <div class="map-section-container">
     <div class="map-section-head">
@@ -643,8 +440,6 @@ input, select, textarea { font: inherit; color: inherit; }
         <div class="sub">地図のピンをクリックすると業者詳細が表示されます</div>
       </div>
     </div>
-
-    <!-- ツールバー -->
     <div class="map-toolbar">
       <div class="search-field">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.65" y2="16.65"/></svg>
@@ -658,7 +453,6 @@ input, select, textarea { font: inherit; color: inherit; }
         <button class="chip-btn" onclick="resetView()">全体表示</button>
       </div>
     </div>
-
     <div class="filter-panel" id="filterPanel">
       <div class="filter-group">
         <span class="filter-label">対応内容</span>
@@ -677,7 +471,6 @@ input, select, textarea { font: inherit; color: inherit; }
         </div>
       </div>
     </div>
-
     <div class="map-wrap">
       <div id="map"></div>
       <div class="map-overlay-info">
@@ -691,7 +484,7 @@ input, select, textarea { font: inherit; color: inherit; }
   </div>
 </section>
 
-<!-- ===================== 業者一覧 ===================== -->
+<!-- ========== LIST ========== -->
 <section class="list-section" id="list-section">
   <div class="container">
     <div class="list-head">
@@ -710,42 +503,7 @@ input, select, textarea { font: inherit; color: inherit; }
   </div>
 </section>
 
-<!-- ===================== 信頼バンド ===================== -->
-<section class="trust-band" id="trust-section">
-  <div class="container">
-    <div class="trust-inner">
-      <div class="trust-item">
-        <div class="trust-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <div class="trust-body">
-          <h4>審査基準をクリアした優良業者のみ掲載</h4>
-          <p>独自の審査基準を通過した信頼できる施工業者のみを掲載しています。</p>
-        </div>
-      </div>
-      <div class="trust-item">
-        <div class="trust-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        </div>
-        <div class="trust-body">
-          <h4>見積もり依頼は無料・簡単入力</h4>
-          <p>フォームから送るだけで複数業者へ一括見積もり依頼が可能です。</p>
-        </div>
-      </div>
-      <div class="trust-item">
-        <div class="trust-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        </div>
-        <div class="trust-body">
-          <h4>ご利用はすべて完全無料</h4>
-          <p>業者探しから見積もり依頼まで、お客様の費用は一切かかりません。</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== FOOTER ===================== -->
+<!-- ========== FOOTER ========== -->
 <footer class="site-footer">
   <div class="footer-main">
     <div>
@@ -759,17 +517,12 @@ input, select, textarea { font: inherit; color: inherit; }
         <li><a href="#">ホーム</a></li>
         <li><a href="#map-section">業者を探す</a></li>
         <li><a href="#list-section">業者一覧</a></li>
-        <li><a href="#trust-section">ご利用について</a></li>
         <li><a href="#" onclick="event.preventDefault();openRegisterModal()">業者登録</a></li>
       </ul>
     </div>
     <div class="footer-col">
       <h4>お問い合わせ</h4>
       <ul class="footer-contact">
-        <li>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>全国対応ネットワーク</span>
-        </li>
         <li>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           <a href="mailto:air-labo@ok-depot.jp">air-labo@ok-depot.jp</a>
@@ -784,25 +537,12 @@ input, select, textarea { font: inherit; color: inherit; }
   <div class="footer-bottom">
     <div class="footer-bottom-inner">
       <span>© 2026 passiv blind 施工業者マップ. All rights reserved.</span>
-      <div class="footer-legal">
-        <a href="#">プライバシーポリシー</a>
-        <a href="#">利用規約</a>
-      </div>
+      <div class="footer-legal"><a href="#">プライバシーポリシー</a><a href="#">利用規約</a></div>
     </div>
   </div>
 </footer>
 
-<!-- ===================== MODALS ===================== -->
-<div class="modal-backdrop" id="detailModal">
-  <div class="modal modal-lg">
-    <div class="modal-head">
-      <div><p class="modal-pref" id="detailPref"></p><h3 id="detailName"></h3></div>
-      <button class="modal-close" onclick="closeModal('detailModal')">×</button>
-    </div>
-    <div class="modal-body" id="detailBody"></div>
-  </div>
-</div>
-
+<!-- ========== MODAL: Register ========== -->
 <div class="modal-backdrop" id="registerModal">
   <div class="modal">
     <div class="modal-head">
@@ -814,9 +554,9 @@ input, select, textarea { font: inherit; color: inherit; }
       <form id="registerForm" class="form-grid" onsubmit="return false;">
         <div class="form-row"><label>会社名 <span class="req">必須</span></label><input type="text" name="name" required placeholder="株式会社 ○○施工"></div>
         <div class="form-row">
-          <label>会社・物件の写真URL</label>
+          <label>会社・施工写真のURL</label>
           <input type="url" name="imageUrl" placeholder="https://example.com/photo.jpg">
-          <div class="hint">会社のホームページや施工写真のURL（https://〜.jpg など）を入力すると、カードに写真が表示されます。</div>
+          <div class="hint">会社サイトや施工写真のURLを貼り付けるとカードに写真が表示されます。</div>
         </div>
         <div class="form-row">
           <label>住所 <span class="req">必須</span></label>
@@ -847,25 +587,35 @@ input, select, textarea { font: inherit; color: inherit; }
   </div>
 </div>
 
+<!-- ========== MODAL: Detail ========== -->
+<div class="modal-backdrop" id="detailModal">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <div><p class="modal-pref" id="detailPref"></p><h3 id="detailName"></h3></div>
+      <button class="modal-close" onclick="closeModal('detailModal')">×</button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
+  </div>
+</div>
 
 <script>
 /* =====================================================
    Data
 ===================================================== */
 const SEED_DATA = [
-  { id:"c001",name:"東京パッシブ設計",pref:"東京都",address:"東京都渋谷区恵比寿南1-2-3",lat:35.6464,lng:139.7101,areas:["東京都","神奈川県","千葉県","埼玉県"],types:["新築","リフォーム","個人","法人"],phone:"03-1234-5678",email:"info@tokyo-passiv.example.com",website:"https://tokyo-passiv.example.com",hasCases:true,comment:"都内を中心に高性能住宅への外付けブラインド施工を多数手がけています。",cases:24,rating:4.8,reviewCount:32,reviews:[{author:"Y.K.",date:"2026-02-14",stars:5,body:"南面の熱対策で設置。夏のエアコン効率が明らかに変わりました。"},{author:"建築士 M",date:"2026-01-08",stars:5,body:"外壁納まりの相談から丁寧に対応いただけました。"}]},
-  { id:"c002",name:"世田谷ウィンドウズ",pref:"東京都",address:"東京都世田谷区三軒茶屋2-10-5",lat:35.6430,lng:139.6716,areas:["東京都","神奈川県"],types:["リフォーム","個人"],phone:"03-5432-1098",email:"contact@setagaya-windows.example.com",website:"https://setagaya-windows.example.com",hasCases:true,comment:"既存住宅へのリフォーム取付専門。狭小地の納まり検討が得意です。",cases:12,rating:4.6,reviewCount:18,reviews:[{author:"T.M.",date:"2026-03-02",stars:5,body:"狭い外壁面でも美しく納めていただきました。"}]},
-  { id:"c003",name:"関西パッシブホームズ",pref:"大阪府",address:"大阪府大阪市北区梅田1-1-3",lat:34.7024,lng:135.4959,areas:["大阪府","京都府","兵庫県","奈良県","和歌山県"],types:["新築","リフォーム","法人","個人"],phone:"06-6123-4567",email:"info@kansai-passiv.example.com",website:"https://kansai-passiv.example.com",hasCases:true,comment:"関西圏全域対応。工務店様との協業も歓迎します。",cases:31,rating:4.7,reviewCount:27,reviews:[{author:"H.S.",date:"2026-02-20",stars:5,body:"新築プランに組み込んでいただき、南面の遮熱が快適です。"}]},
-  { id:"c004",name:"なにわエクステリア",pref:"大阪府",address:"大阪府堺市堺区南瓦町3-1",lat:34.5733,lng:135.4830,areas:["大阪府","和歌山県"],types:["リフォーム","個人"],phone:"072-234-5678",email:"hello@naniwa-ext.example.com",website:"https://naniwa-ext.example.com",hasCases:false,comment:"エクステリア全般。パッシブブラインドは2024年から取り扱い開始。",cases:0,rating:0,reviewCount:0,reviews:[]},
-  { id:"c005",name:"博多ウインドウワークス",pref:"福岡県",address:"福岡県福岡市博多区博多駅前3-2-1",lat:33.5904,lng:130.4017,areas:["福岡県","佐賀県","熊本県","大分県"],types:["新築","リフォーム","個人"],phone:"092-555-1234",email:"info@hakata-ww.example.com",website:"https://hakata-ww.example.com",hasCases:true,comment:"九州北部の気候に合わせた遮熱設計が得意。",cases:18,rating:4.9,reviewCount:21,reviews:[{author:"F.N.",date:"2026-03-11",stars:5,body:"西日対策に設置。エアコン負荷が明らかに減りました。"}]},
-  { id:"c006",name:"札幌断熱プロジェクト",pref:"北海道",address:"北海道札幌市中央区大通西5-1",lat:43.0618,lng:141.3530,areas:["北海道"],types:["新築","法人"],phone:"011-222-3344",email:"contact@sapporo-dp.example.com",website:"https://sapporo-dp.example.com",hasCases:true,comment:"寒冷地対応。高断熱住宅とのセット提案を得意としています。",cases:9,rating:4.5,reviewCount:8,reviews:[]},
-  { id:"c007",name:"名古屋エコビルド",pref:"愛知県",address:"愛知県名古屋市中区栄3-15-33",lat:35.1681,lng:136.9088,areas:["愛知県","岐阜県","三重県"],types:["新築","リフォーム","法人","個人"],phone:"052-876-5432",email:"info@nagoya-eco.example.com",website:"https://nagoya-eco.example.com",hasCases:true,comment:"東海3県。ZEH住宅への組み込み実績多数。",cases:22,rating:4.7,reviewCount:19,reviews:[{author:"I.K.",date:"2026-01-25",stars:5,body:"ZEHの計算と合わせて提案いただけました。"}]},
-  { id:"c008",name:"杜の都ウィンドウ",pref:"宮城県",address:"宮城県仙台市青葉区中央1-3-1",lat:38.2600,lng:140.8826,areas:["宮城県","山形県","福島県","岩手県"],types:["リフォーム","個人"],phone:"022-123-4567",email:"info@mori-window.example.com",website:"https://mori-window.example.com",hasCases:true,comment:"東北エリア対応。既存住宅の外観を損なわない施工を心がけています。",cases:7,rating:4.4,reviewCount:6,reviews:[]},
-  { id:"c009",name:"広島サンシェード工房",pref:"広島県",address:"広島県広島市中区紙屋町1-1-17",lat:34.3939,lng:132.4594,areas:["広島県","岡山県","山口県"],types:["新築","リフォーム","個人"],phone:"082-333-4444",email:"info@hiroshima-ss.example.com",website:"https://hiroshima-ss.example.com",hasCases:false,comment:"中国地方の新規取扱店。現在施工事例を順次蓄積中です。",cases:0,rating:0,reviewCount:0,reviews:[]},
-  { id:"c010",name:"京都パッシブ工房",pref:"京都府",address:"京都府京都市下京区烏丸通七条下る",lat:34.9878,lng:135.7593,areas:["京都府","滋賀県"],types:["新築","リフォーム","個人"],phone:"075-987-6543",email:"info@kyoto-passiv.example.com",website:"https://kyoto-passiv.example.com",hasCases:true,comment:"京町家など伝統建築との調和を考慮した施工提案を行います。",cases:11,rating:4.9,reviewCount:14,reviews:[{author:"O.Y.",date:"2026-02-03",stars:5,body:"町家の趣を損なわず設置いただけました。"}]}
+  { id:"c001",name:"東京パッシブ設計",pref:"東京都",address:"東京都渋谷区恵比寿南1-2-3",lat:35.6464,lng:139.7101,areas:["東京都","神奈川県","千葉県","埼玉県"],types:["新築","リフォーム","個人","法人"],phone:"03-1234-5678",email:"info@tokyo-passiv.example.com",website:"https://tokyo-passiv.example.com",imageUrl:"https://picsum.photos/seed/int10/600/380",hasCases:true,comment:"都内を中心に高性能住宅への外付けブラインド施工を多数手がけています。",cases:24,rating:4.8,reviewCount:32,reviews:[{author:"Y.K.",date:"2026-02-14",stars:5,body:"南面の熱対策で設置。夏のエアコン効率が明らかに変わりました。"},{author:"建築士 M",date:"2026-01-08",stars:5,body:"外壁納まりの相談から丁寧に対応いただけました。"}]},
+  { id:"c002",name:"世田谷ウィンドウズ",pref:"東京都",address:"東京都世田谷区三軒茶屋2-10-5",lat:35.6430,lng:139.6716,areas:["東京都","神奈川県"],types:["リフォーム","個人"],phone:"03-5432-1098",email:"contact@setagaya-windows.example.com",website:"https://setagaya-windows.example.com",imageUrl:"https://picsum.photos/seed/int20/600/380",hasCases:true,comment:"既存住宅へのリフォーム取付専門。狭小地の納まり検討が得意です。",cases:12,rating:4.6,reviewCount:18,reviews:[{author:"T.M.",date:"2026-03-02",stars:5,body:"狭い外壁面でも美しく納めていただきました。"}]},
+  { id:"c003",name:"関西パッシブホームズ",pref:"大阪府",address:"大阪府大阪市北区梅田1-1-3",lat:34.7024,lng:135.4959,areas:["大阪府","京都府","兵庫県","奈良県","和歌山県"],types:["新築","リフォーム","法人","個人"],phone:"06-6123-4567",email:"info@kansai-passiv.example.com",website:"https://kansai-passiv.example.com",imageUrl:"https://picsum.photos/seed/int30/600/380",hasCases:true,comment:"関西圏全域対応。工務店様との協業も歓迎します。",cases:31,rating:4.7,reviewCount:27,reviews:[{author:"H.S.",date:"2026-02-20",stars:5,body:"新築プランに組み込んでいただき、南面の遮熱が快適です。"}]},
+  { id:"c004",name:"なにわエクステリア",pref:"大阪府",address:"大阪府堺市堺区南瓦町3-1",lat:34.5733,lng:135.4830,areas:["大阪府","和歌山県"],types:["リフォーム","個人"],phone:"072-234-5678",email:"hello@naniwa-ext.example.com",website:"https://naniwa-ext.example.com",imageUrl:"https://picsum.photos/seed/int40/600/380",hasCases:false,comment:"エクステリア全般。パッシブブラインドは2024年から取り扱い開始。",cases:0,rating:0,reviewCount:0,reviews:[]},
+  { id:"c005",name:"博多ウインドウワークス",pref:"福岡県",address:"福岡県福岡市博多区博多駅前3-2-1",lat:33.5904,lng:130.4017,areas:["福岡県","佐賀県","熊本県","大分県"],types:["新築","リフォーム","個人"],phone:"092-555-1234",email:"info@hakata-ww.example.com",website:"https://hakata-ww.example.com",imageUrl:"https://picsum.photos/seed/int50/600/380",hasCases:true,comment:"九州北部の気候に合わせた遮熱設計が得意。",cases:18,rating:4.9,reviewCount:21,reviews:[{author:"F.N.",date:"2026-03-11",stars:5,body:"西日対策に設置。エアコン負荷が明らかに減りました。"}]},
+  { id:"c006",name:"札幌断熱プロジェクト",pref:"北海道",address:"北海道札幌市中央区大通西5-1",lat:43.0618,lng:141.3530,areas:["北海道"],types:["新築","法人"],phone:"011-222-3344",email:"contact@sapporo-dp.example.com",website:"https://sapporo-dp.example.com",imageUrl:"https://picsum.photos/seed/int60/600/380",hasCases:true,comment:"寒冷地対応。高断熱住宅とのセット提案を得意としています。",cases:9,rating:4.5,reviewCount:8,reviews:[]},
+  { id:"c007",name:"名古屋エコビルド",pref:"愛知県",address:"愛知県名古屋市中区栄3-15-33",lat:35.1681,lng:136.9088,areas:["愛知県","岐阜県","三重県"],types:["新築","リフォーム","法人","個人"],phone:"052-876-5432",email:"info@nagoya-eco.example.com",website:"https://nagoya-eco.example.com",imageUrl:"https://picsum.photos/seed/int70/600/380",hasCases:true,comment:"東海3県。ZEH住宅への組み込み実績多数。",cases:22,rating:4.7,reviewCount:19,reviews:[{author:"I.K.",date:"2026-01-25",stars:5,body:"ZEHの計算と合わせて提案いただけました。"}]},
+  { id:"c008",name:"杜の都ウィンドウ",pref:"宮城県",address:"宮城県仙台市青葉区中央1-3-1",lat:38.2600,lng:140.8826,areas:["宮城県","山形県","福島県","岩手県"],types:["リフォーム","個人"],phone:"022-123-4567",email:"info@mori-window.example.com",website:"https://mori-window.example.com",imageUrl:"https://picsum.photos/seed/int80/600/380",hasCases:true,comment:"東北エリア対応。既存住宅の外観を損なわない施工を心がけています。",cases:7,rating:4.4,reviewCount:6,reviews:[]},
+  { id:"c009",name:"広島サンシェード工房",pref:"広島県",address:"広島県広島市中区紙屋町1-1-17",lat:34.3939,lng:132.4594,areas:["広島県","岡山県","山口県"],types:["新築","リフォーム","個人"],phone:"082-333-4444",email:"info@hiroshima-ss.example.com",website:"https://hiroshima-ss.example.com",imageUrl:"https://picsum.photos/seed/int90/600/380",hasCases:false,comment:"中国地方の新規取扱店。現在施工事例を順次蓄積中です。",cases:0,rating:0,reviewCount:0,reviews:[]},
+  { id:"c010",name:"京都パッシブ工房",pref:"京都府",address:"京都府京都市下京区烏丸通七条下る",lat:34.9878,lng:135.7593,areas:["京都府","滋賀県"],types:["新築","リフォーム","個人"],phone:"075-987-6543",email:"info@kyoto-passiv.example.com",website:"https://kyoto-passiv.example.com",imageUrl:"https://picsum.photos/seed/int100/600/380",hasCases:true,comment:"京町家など伝統建築との調和を考慮した施工提案を行います。",cases:11,rating:4.9,reviewCount:14,reviews:[{author:"O.Y.",date:"2026-02-03",stars:5,body:"町家の趣を損なわず設置いただけました。"}]}
 ];
 
-const STORE_KEY = "passiv_blind_contractors_v1";
+const STORE_KEY = "passiv_blind_contractors_v2";
 function loadData(){try{const r=localStorage.getItem(STORE_KEY);if(!r){localStorage.setItem(STORE_KEY,JSON.stringify(SEED_DATA));return JSON.parse(JSON.stringify(SEED_DATA));}return JSON.parse(r);}catch(e){return JSON.parse(JSON.stringify(SEED_DATA));}}
 function saveData(d){localStorage.setItem(STORE_KEY,JSON.stringify(d));}
 let contractors = loadData();
@@ -1047,22 +797,101 @@ document.querySelectorAll(".sort-btn").forEach(btn=>{
   });
 });
 
+/* =====================================================
+   Hero Slideshow
+   ===================================================== */
+const SLIDE_IMAGES = [
+  "hero.jpg",    // ← GitHubにある画像ファイル名をここに並べるだけ
+  "photo2.jpg",
+  "photo3.jpg",
+];
+const SLIDE_INTERVAL = 5000; // 切り替え間隔（ミリ秒）。5000 = 5秒
+
+(function initSlideshow() {
+  const container = document.getElementById("heroSlides");
+  const dotsWrap  = document.getElementById("slideDots");
+  if (!container) return;
+  const multi = SLIDE_IMAGES.length > 1;
+
+  // スライド要素を生成
+  const slides = SLIDE_IMAGES.map((src, i) => {
+    const el = document.createElement("div");
+    el.className = "hero-slide" + (i === 0 ? " active zooming" : "");
+    el.style.cssText = "background-image:url('" + src + "');background-size:cover;background-position:center 30%;";
+    container.appendChild(el);
+    return el;
+  });
+
+  // ドット生成
+  const dots = SLIDE_IMAGES.map((_, i) => {
+    if (!multi) return null;
+    const btn = document.createElement("button");
+    btn.className = "slide-dot" + (i === 0 ? " active" : "");
+    btn.addEventListener("click", () => goTo(i));
+    dotsWrap.appendChild(btn);
+    return btn;
+  });
+
+  let current = 0, timer;
+
+  function goTo(idx) {
+    slides[current].classList.remove("active");
+    if (dots[current]) dots[current].classList.remove("active");
+    current = (idx + SLIDE_IMAGES.length) % SLIDE_IMAGES.length;
+    slides[current].classList.add("active");
+    slides[current].classList.remove("zooming");
+    void slides[current].offsetWidth; // reflow
+    slides[current].classList.add("zooming");
+    if (dots[current]) dots[current].classList.add("active");
+  }
+
+  function next() { goTo(current + 1); }
+
+  if (multi) {
+    timer = setInterval(next, SLIDE_INTERVAL);
+    const hero = document.getElementById("hero");
+    if (hero) {
+      hero.addEventListener("mouseenter", () => clearInterval(timer));
+      hero.addEventListener("mouseleave", () => { timer = setInterval(next, SLIDE_INTERVAL); });
+    }
+  }
+})();
+
 /* ナビ */
-document.querySelectorAll(".header-nav a").forEach(link=>{
-  link.addEventListener("click",e=>{
-    const href=link.getAttribute("href");
-    if(href&&href.startsWith("#")&&href.length>1){e.preventDefault();const target=document.querySelector(href);if(target){const y=target.getBoundingClientRect().top+window.pageYOffset-72;window.scrollTo({top:y,behavior:"smooth"});}}
-    else if(href==="#"){e.preventDefault();window.scrollTo({top:0,behavior:"smooth"});}
+document.querySelectorAll(".header-nav a").forEach(link => {
+  link.addEventListener("click", e => {
+    const href = link.getAttribute("href");
+    if (href && href.startsWith("#") && href.length > 1) {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target) { const y = target.getBoundingClientRect().top + window.pageYOffset - 72; window.scrollTo({ top: y, behavior: "smooth" }); }
+    } else if (href === "#") { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }
   });
 });
-const navObs=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){const id=entry.target.id;document.querySelectorAll(".header-nav a").forEach(l=>l.classList.remove("active"));const m=document.querySelector(`.header-nav a[href="#${id}"]`);if(m)m.classList.add("active");}});},{rootMargin:"-40% 0px -40% 0px"});
-["map-section","list-section","trust-section"].forEach(id=>{const el=document.getElementById(id);if(el)navObs.observe(el);});
-window.addEventListener("scroll",()=>{if(window.scrollY<200){document.querySelectorAll(".header-nav a").forEach(l=>l.classList.remove("active"));const h=document.querySelector('.header-nav a[href="#"]');if(h)h.classList.add("active");}},{passive:true});
+const navObs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      document.querySelectorAll(".header-nav a").forEach(l => l.classList.remove("active"));
+      const m = document.querySelector('.header-nav a[href="#' + id + '"]');
+      if (m) m.classList.add("active");
+    }
+  });
+}, { rootMargin: "-40% 0px -40% 0px" });
+["map-section", "list-section"].forEach(id => { const el = document.getElementById(id); if (el) navObs.observe(el); });
+window.addEventListener("scroll", () => {
+  if (window.scrollY < 200) {
+    document.querySelectorAll(".header-nav a").forEach(l => l.classList.remove("active"));
+    const h = document.querySelector('.header-nav a[href="#"]');
+    if (h) h.classList.add("active");
+  }
+}, { passive: true });
 
 /* Init */
 populatePrefectures();
 updateStats();
 applyFilters();
+
 </script>
 </body>
 </html>
